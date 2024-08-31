@@ -85,12 +85,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.chanris.tt</groupId>
-            <artifactId>tt-cache-spring-boot-starter</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-jdbc-core</artifactId>
         </dependency>
