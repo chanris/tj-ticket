@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.chanris.tt</groupId>
+    <artifactId>tj-ticket</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+
+    <developers>
+        <developer>
+            <name>尘岳</name>
+            <email>chenyue7@foxmail.com</email>
+            <url>https://github.com/chanris</url>
+        </developer>
+    </developers>
+
+    <properties>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <spotless-maven-plugin.version>2.22.1</spotless-maven-plugin.version>
+        <skip.checkstyle.check>true</skip.checkstyle.check>
+        <maven-common-plugin.version>3.1.0</maven-common-plugin.version>
+        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <lombok.version>1.18.30</lombok.version>
+    </properties>
+
+    <modules>
+        <module>dependencies</module>
+        <module>frameworks</module>
+        <module>frameworks/base</module>
+        <module>frameworks/bizs</module>
+        <module>frameworks/bizs/user</module>
+        <module>frameworks/cache</module>
+        <module>frameworks/common</module>
+        <module>frameworks/designpattern</module>
+        <module>frameworks/convention</module>
+        <module>frameworks/database</module>
+        <module>frameworks/distributedid</module>
+        <module>frameworks/idempotent</module>
+        <module>frameworks/web</module>
+        <module>frameworks/log</module>
+        <module>services</module>
+        <module>services/aggregation-service</module>
+        <module>services/order-service</module>
+        <module>services/ticket-service</module>
+        <module>services/pay-service</module>
+        <module>services/user-service</module>
+        <module>services/gateway-service</module>
+    </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+        </dependency>
+    </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.chanris.tt</groupId>
+                <artifactId>tt-dependencies</artifactId>
+                <version>${project.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${maven-common-plugin.version}</version>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-common-plugin.version}</version>
+                <configuration>
+                    <skipTests>true</skipTests>
+                </configuration>
+            </plugin>
+
+            <!--集成测试-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>${maven-common-plugin.version}</version>
+                <configuration>
+                    <skipTests>true</skipTests>
+                </configuration>
+            </plugin>
+
+            <!-- 代码格式化-->
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>${spotless-maven-plugin.version}</version>
+                <configuration>
+                    <!--指定用于java的格式化规则-->
+<!--                    <java>-->
+<!--                        &lt;!&ndash;<eclipse>-->
+<!--                            <file>${maven.multiModuleProjectDirectory}/format/12306_spotless_formatter.xml</file>-->
+<!--                        </eclipse>&ndash;&gt;-->
+<!--                        &lt;!&ndash;知名代码文件的版权声明（或许可证头）的位置&ndash;&gt;-->
+<!--                        <licenseHeader>-->
+<!--                            &lt;!&ndash; ${maven.multiModuleProjectDirectory} 爆红属于正常，并不影响编译或者运行，忽略就好 &ndash;&gt;-->
+<!--                            <file>${maven.multiModuleProjectDirectory}/format/copyright.txt</file>-->
+<!--                        </licenseHeader>-->
+<!--                    </java>-->
+                </configuration>
+                <executions>
+                    <!--插件的执行计划-->
+                    <execution>
+                        <!--插件执行的目标，apply表示应用spotless-->
+                        <goals>
+                            <goal>apply</goal>
+                        </goals>
+                        <!--指定查询执行的阶段，表示在compile阶段执行-->
+                        <phase>compile</phase>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!--maven 代码风格检查-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${maven-common-plugin.version}</version>
+                <configuration>
+                    <!-- ${maven.multiModuleProjectDirectory} 爆红属于正常，并不影响编译或者运行，忽略就好 -->
+                    <configLocation>${maven.multiModuleProjectDirectory}/checkstyle/tj_checkstyle.xml
+                    </configLocation>
+                    <!-- ${maven.multiModuleProjectDirectory} 爆红属于正常，并不影响编译或者运行，忽略就好 -->
+                    <suppressionsLocation>
+                        ${maven.multiModuleProjectDirectory}/checkstyle/tj_checkstyle_suppression.xml
+                    </suppressionsLocation>
+                    <!-- Do not scan the test directory for now -->
+                    <includeTestSourceDirectory>false</includeTestSourceDirectory>
+                    <consoleOutput>true</consoleOutput>
+                    <encoding>UTF-8</encoding>
+                    <!--true:跳过风格检查，不启用-->
+                    <skip>${skip.checkstyle.check}</skip>
+                    <violationSeverity>error</violationSeverity>
+                </configuration>
+                <!--插件的执行配置-->
+                <executions>
+                    <execution>
+                        <id>validate</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>checkstyle</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.6.1</version>
+                <configuration>
+                    <source>17</source>
+                    <target>17</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
