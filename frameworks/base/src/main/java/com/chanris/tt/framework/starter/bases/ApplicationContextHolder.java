@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * @author chenyue7@foxmail.com
  * @date 2024/9/1
- * @description
+ * @description 应用上下文信息持有者
  */
 public class ApplicationContextHolder implements ApplicationContextAware {
 
