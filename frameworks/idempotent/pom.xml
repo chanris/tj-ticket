@@ -61,6 +61,12 @@
             <groupId>com.chanris.tt</groupId>
             <artifactId>tt-user-spring-boot-starter</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.chanris.tt</groupId>
+                    <artifactId>tt-base-spring-boot-starter</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 

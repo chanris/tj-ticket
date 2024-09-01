@@ -9,6 +9,10 @@
     <version>1.0.0</version>
     <packaging>pom</packaging>
 
+    <description>
+        SpringBoot3+Java17+SpringCloudAlibaba+RocketMQ等技术架构，完成仿铁路12306用户+购票+订单+支付服务。
+    </description>
+
     <developers>
         <developer>
             <name>尘岳</name>
@@ -32,25 +36,7 @@
     <modules>
         <module>dependencies</module>
         <module>frameworks</module>
-        <module>frameworks/base</module>
-        <module>frameworks/bizs</module>
-        <module>frameworks/bizs/user</module>
-        <module>frameworks/cache</module>
-        <module>frameworks/common</module>
-        <module>frameworks/designpattern</module>
-        <module>frameworks/convention</module>
-        <module>frameworks/database</module>
-        <module>frameworks/distributedid</module>
-        <module>frameworks/idempotent</module>
-        <module>frameworks/web</module>
-        <module>frameworks/log</module>
         <module>services</module>
-        <module>services/aggregation-service</module>
-        <module>services/order-service</module>
-        <module>services/ticket-service</module>
-        <module>services/pay-service</module>
-        <module>services/user-service</module>
-        <module>services/gateway-service</module>
     </modules>
 
     <dependencies>
