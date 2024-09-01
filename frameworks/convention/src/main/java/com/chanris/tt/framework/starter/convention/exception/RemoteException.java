@@ -1,0 +1,31 @@
+package com.chanris.tt.framework.starter.convention.exception;
+
+import com.chanris.tt.framework.starter.convention.errorcode.BaseErrorCode;
+import com.chanris.tt.framework.starter.convention.errorcode.IErrorCode;
+
+/**
+ * @author chenyue7@foxmail.com
+ * @date 2024/9/1
+ * @description 远程服务调用异常
+ */
+public class RemoteException extends AbstractException {
+    public RemoteException(String message) {
+        this(message, null, BaseErrorCode.REMOTE_ERROR);
+    }
+
+    public RemoteException(String message, IErrorCode errorCode) {
+        this(message, null, errorCode);
+    }
+
+    public RemoteException(String message, Throwable throwable, IErrorCode errorCode) {
+        super(message, throwable, errorCode);
+    }
+
+    @Override
+    public String toString() {
+        return "RemoteException{" +
+                "code='" + errorCode + "'," +
+                "message='" + errorMessage + "'" +
+                '}';
+    }
+}
