@@ -2,6 +2,8 @@ package com.chanris.tt.framework.starter.idempotent.core;
 
 import com.chanris.tt.framework.starter.bases.ApplicationContextHolder;
 import com.chanris.tt.framework.starter.idempotent.core.param.IdempotentParamService;
+import com.chanris.tt.framework.starter.idempotent.core.spel.IdempotentSpELByMQExecuteHandler;
+import com.chanris.tt.framework.starter.idempotent.core.spel.IdempotentSpELService;
 import com.chanris.tt.framework.starter.idempotent.core.token.IdempotentTokenService;
 import com.chanris.tt.framework.starter.idempotent.enums.IdempotentSceneEnum;
 import com.chanris.tt.framework.starter.idempotent.enums.IdempotentTypeEnum;
@@ -20,13 +22,15 @@ public class IdempotentExecuteHandlerFactory {
                 switch (type) {
                     case PARAM -> result = ApplicationContextHolder.getBean(IdempotentParamService.class);
                     case TOKEN -> result = ApplicationContextHolder.getBean(IdempotentTokenService.class);
+                    case SPEL -> result = ApplicationContextHolder.getBean(IdempotentSpELService.class);
+                    default -> {
+                    }
                 }
             }
-            case MQ-> {
-
-            }
+            case MQ-> result = ApplicationContextHolder.getBean(IdempotentSpELByMQExecuteHandler.class);
             default -> {
             }
         }
+        return result;
     }
 }
