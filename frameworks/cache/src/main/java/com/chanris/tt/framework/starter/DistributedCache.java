@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
  * @date 2024/9/1
  * @description 分布式缓存
  */
-public interface DistributedCache extends Cache{
+public interface DistributedCache extends Cache {
     /**
      * 获取缓存，如查询结果为空，调用 {@link CacheLoader} 加载缓存
      */
