@@ -1,6 +1,7 @@
 package com.chanris.tt.biz.userservice.service;
 
 import com.chanris.tt.biz.userservice.dto.req.UserUpdateReqDTO;
+import com.chanris.tt.biz.userservice.dto.resp.UserQueryActualRespDTO;
 import com.chanris.tt.biz.userservice.dto.resp.UserQueryRespDTO;
 import jakarta.validation.constraints.NotEmpty;
 
@@ -34,7 +35,7 @@ public interface UserService {
      * @param username 用户名
      * @return 用户详细信息
      */
-    UserQueryRespDTO queryActualUserByUsername(@NotEmpty String username);
+    UserQueryActualRespDTO queryActualUserByUsername(@NotEmpty String username);
 
 
     /**

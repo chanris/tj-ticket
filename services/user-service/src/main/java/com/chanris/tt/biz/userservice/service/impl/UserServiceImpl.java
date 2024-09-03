@@ -1,40 +1,100 @@
 package com.chanris.tt.biz.userservice.service.impl;
 
+import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.chanris.tt.biz.userservice.dao.entity.UserDO;
+import com.chanris.tt.biz.userservice.dao.entity.UserDeletionDO;
+import com.chanris.tt.biz.userservice.dao.entity.UserMailDO;
+import com.chanris.tt.biz.userservice.dao.mapper.UserDeletionMapper;
+import com.chanris.tt.biz.userservice.dao.mapper.UserMailMapper;
+import com.chanris.tt.biz.userservice.dao.mapper.UserMapper;
 import com.chanris.tt.biz.userservice.dto.req.UserUpdateReqDTO;
+import com.chanris.tt.biz.userservice.dto.resp.UserQueryActualRespDTO;
 import com.chanris.tt.biz.userservice.dto.resp.UserQueryRespDTO;
 import com.chanris.tt.biz.userservice.service.UserService;
+import com.chanris.tt.framework.starter.common.toolkit.BeanUtil;
+import com.chanris.tt.framework.starter.convention.exception.ClientException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * @author chenyue7@foxmail.com
  * @date 2024/9/2
  * @description 用户信息接口实现层
  */
+@Slf4j
+@Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
+    private final UserMapper userMapper;
+    private final UserDeletionMapper userDeletionMapper;
+    private final UserMailMapper userMailMapper;
 
 
     @Override
     public UserQueryRespDTO queryUserByUserId(String userId) {
-        return null;
+        LambdaQueryWrapper<UserDO> queryWrapper = Wrappers.lambdaQuery(UserDO.class)
+                .eq(UserDO::getId, userId);
+        UserDO userDO = userMapper.selectOne(queryWrapper);
+        if (userDO == null) {
+            throw new ClientException("用户不存在，请检查用户ID是否正确");
+        }
+        return BeanUtil.convert(userDO, UserQueryRespDTO.class);
     }
 
     @Override
     public UserQueryRespDTO queryUserByUsername(String username) {
-        return null;
+        LambdaQueryWrapper<UserDO> queryWrapper = Wrappers.lambdaQuery(UserDO.class)
+                .eq(UserDO::getUsername, username);
+        UserDO userDO = userMapper.selectOne(queryWrapper);
+        if (userDO == null) {
+            throw new ClientException("用户不存在，请检查用户名是否正确");
+        }
+        return BeanUtil.convert(userDO, UserQueryRespDTO.class);
     }
 
     @Override
-    public UserQueryRespDTO queryActualUserByUsername(String username) {
-        return null;
+    public UserQueryActualRespDTO queryActualUserByUsername(String username) {
+        return BeanUtil.convert(queryUserByUsername(username), UserQueryActualRespDTO.class);
     }
 
     @Override
     public Integer queryUserDeletionNum(Integer idType, String idCard) {
-        return null;
+        LambdaQueryWrapper<UserDeletionDO> queryWrapper = Wrappers.lambdaQuery(UserDeletionDO.class)
+                .eq(UserDeletionDO::getIdType, idType)
+                .eq(UserDeletionDO::getIdCard, idCard);
+        // TODO 此处应该先查询缓存
+        Long deletionCount = userDeletionMapper.selectCount(queryWrapper);
+        return Optional.ofNullable(deletionCount).map(Long::intValue).orElse(0);
     }
 
     @Override
     public void update(UserUpdateReqDTO requestParam) {
+        UserQueryRespDTO userQueryRespDTO = queryUserByUsername(requestParam.getUsername());
+        UserDO userDO = BeanUtil.convert(requestParam, UserDO.class);
+        // 查询条件
+        LambdaUpdateWrapper<UserDO> userUpdateWrapper = Wrappers.lambdaUpdate(UserDO.class)
+                .eq(UserDO::getUsername, requestParam.getUsername());
 
+        userMapper.update(userDO, userUpdateWrapper);
+        // 如果更新了邮箱地址，在user_mail更新mail的状态
+        if (StrUtil.isNotBlank(requestParam.getMail()) && !Objects.equals(requestParam.getMail(), userQueryRespDTO.getMail())) {
+            LambdaUpdateWrapper<UserMailDO> updateWrapper = Wrappers.lambdaUpdate(UserMailDO.class)
+                    .eq(UserMailDO::getMail, userQueryRespDTO.getMail());
+            userMailMapper.delete(updateWrapper);
+            UserMailDO userMailDO = UserMailDO.builder()
+                    .mail(requestParam.getMail())
+                    .username(requestParam.getUsername())
+                    .build();
+            // 插入新的用户-邮箱关系
+            userMailMapper.insert(userMailDO);
+        }
     }
 }
