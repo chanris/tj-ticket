@@ -1,6 +1,6 @@
 package com.chanris.tt.framework.starter.idempotent.config;
 
-import com.chanris.tt.framework.starter.config.RedisDistributedProperties;
+import com.chanris.tt.framework.starter.cache.config.RedisDistributedProperties;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

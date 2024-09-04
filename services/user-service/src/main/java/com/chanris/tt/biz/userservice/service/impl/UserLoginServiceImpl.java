@@ -15,7 +15,7 @@ import com.chanris.tt.biz.userservice.dto.resp.UserQueryRespDTO;
 import com.chanris.tt.biz.userservice.dto.resp.UserRegisterRespDTO;
 import com.chanris.tt.biz.userservice.service.UserLoginService;
 import com.chanris.tt.biz.userservice.service.UserService;
-import com.chanris.tt.framework.starter.DistributedCache;
+import com.chanris.tt.framework.starter.cache.DistributedCache;
 import com.chanris.tt.framework.starter.common.toolkit.BeanUtil;
 import com.chanris.tt.framework.starter.convention.exception.ClientException;
 import com.chanris.tt.framework.starter.convention.exception.ServiceException;
@@ -108,8 +108,8 @@ public class UserLoginServiceImpl implements UserLoginService {
     }
 
     @Override
-    public UserLoginReqDTO checkLogin(String accessToken) {
-        return distributedCache.get(accessToken, UserLoginReqDTO.class);
+    public UserLoginRespDTO checkLogin(String accessToken) {
+        return distributedCache.get(accessToken, UserLoginRespDTO.class);
     }
 
     @Override

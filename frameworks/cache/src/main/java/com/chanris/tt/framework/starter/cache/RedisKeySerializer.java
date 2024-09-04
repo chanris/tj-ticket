@@ -1,4 +1,4 @@
-package com.chanris.tt.framework.starter;
+package com.chanris.tt.framework.starter.cache;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.InitializingBean;

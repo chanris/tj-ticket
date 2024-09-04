@@ -1,6 +1,6 @@
 package com.chanris.tt.framework.starter.idempotent.core.spel;
 
-import com.chanris.tt.framework.starter.DistributedCache;
+import com.chanris.tt.framework.starter.cache.DistributedCache;
 import com.chanris.tt.framework.starter.idempotent.annotation.Idempotent;
 import com.chanris.tt.framework.starter.idempotent.core.*;
 import com.chanris.tt.framework.starter.idempotent.enums.IdempotentMQConsumeStatusEnum;

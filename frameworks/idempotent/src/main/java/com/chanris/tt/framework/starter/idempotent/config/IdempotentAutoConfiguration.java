@@ -1,6 +1,6 @@
 package com.chanris.tt.framework.starter.idempotent.config;
 
-import com.chanris.tt.framework.starter.DistributedCache;
+import com.chanris.tt.framework.starter.cache.DistributedCache;
 import com.chanris.tt.framework.starter.idempotent.core.IdempotentAspect;
 import com.chanris.tt.framework.starter.idempotent.core.param.IdempotentParamExecuteHandler;
 import com.chanris.tt.framework.starter.idempotent.core.param.IdempotentParamService;

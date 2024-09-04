@@ -1,4 +1,4 @@
-package com.chanris.tt.framework.starter.core;
+package com.chanris.tt.framework.starter.cache.core;
 
 /**
  * @author chenyue7@foxmail.com

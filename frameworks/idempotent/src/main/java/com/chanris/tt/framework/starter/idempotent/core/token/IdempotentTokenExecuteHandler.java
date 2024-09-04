@@ -1,7 +1,7 @@
 package com.chanris.tt.framework.starter.idempotent.core.token;
 
 import cn.hutool.core.util.StrUtil;
-import com.chanris.tt.framework.starter.DistributedCache;
+import com.chanris.tt.framework.starter.cache.DistributedCache;
 import com.chanris.tt.framework.starter.convention.errorcode.BaseErrorCode;
 import com.chanris.tt.framework.starter.convention.exception.ClientException;
 import com.chanris.tt.framework.starter.idempotent.config.IdempotentProperties;

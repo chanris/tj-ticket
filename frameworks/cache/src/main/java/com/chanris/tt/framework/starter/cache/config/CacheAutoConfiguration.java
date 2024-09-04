@@ -1,7 +1,7 @@
-package com.chanris.tt.framework.starter.config;
+package com.chanris.tt.framework.starter.cache.config;
 
-import com.chanris.tt.framework.starter.RedisKeySerializer;
-import com.chanris.tt.framework.starter.StringRedisTemplateProxy;
+import com.chanris.tt.framework.starter.cache.RedisKeySerializer;
+import com.chanris.tt.framework.starter.cache.StringRedisTemplateProxy;
 import lombok.AllArgsConstructor;
 import org.redisson.api.RBloomFilter;
 import org.redisson.api.RedissonClient;

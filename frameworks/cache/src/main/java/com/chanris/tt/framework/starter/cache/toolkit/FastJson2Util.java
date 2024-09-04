@@ -1,4 +1,4 @@
-package com.chanris.tt.framework.starter.toolkit;
+package com.chanris.tt.framework.starter.cache.toolkit;
 
 import com.alibaba.fastjson2.util.ParameterizedTypeImpl;
 

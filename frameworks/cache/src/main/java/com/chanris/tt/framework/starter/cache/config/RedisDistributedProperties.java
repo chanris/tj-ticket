@@ -1,4 +1,4 @@
-package com.chanris.tt.framework.starter.config;
+package com.chanris.tt.framework.starter.cache.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

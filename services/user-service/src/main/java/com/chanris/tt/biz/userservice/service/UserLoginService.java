@@ -27,7 +27,7 @@ public interface UserLoginService {
      * @param accessToken 用户登录 Token 凭证
      * @return 用户是否登录返回结果
      */
-    UserLoginReqDTO checkLogin(String accessToken);
+    UserLoginRespDTO checkLogin(String accessToken);
 
     /**
      * 用户退出登录
