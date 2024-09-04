@@ -15,7 +15,6 @@ import org.springframework.data.redis.core.StringRedisTemplate;
  * @date 2024/9/1
  * @description 缓存穿透布隆过滤器
  */
-
 @AllArgsConstructor
 @EnableConfigurationProperties({RedisDistributedProperties.class, BloomFilterPenetrateProperties.class})
 public class  CacheAutoConfiguration {
@@ -25,7 +24,7 @@ public class  CacheAutoConfiguration {
      * 创建 Redis Key 序列化器，可自定义 Key Prefix
      */
     @Bean
-    public RedisKeySerializer redisKeySerializer() {
+    public RedisKeySerializer redisKeySerializer() { // 自定义Redis key 序列化器
         String prefix = redisDistributedProperties.getPrefix();
         String prefixCharset = redisDistributedProperties.getPrefixCharset();
         return new RedisKeySerializer(prefix, prefixCharset);
@@ -33,6 +32,7 @@ public class  CacheAutoConfiguration {
 
     /**
      * 防止缓存穿透的布隆过滤器
+     * 由Redisson提供
      */
     @Bean
     @ConditionalOnProperty(prefix = BloomFilterPenetrateProperties.PREFIX, name = "enabled", havingValue = "true")

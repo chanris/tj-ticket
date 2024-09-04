@@ -8,7 +8,7 @@ import com.chanris.tt.biz.userservice.dao.entity.UserPhoneDO;
  * @date 2024/9/2
  * @description 用户手机号持久层
  */
-public interface UserPhoneMapper extends BaseMapper<UserMapper> {
+public interface UserPhoneMapper extends BaseMapper<UserPhoneDO> {
     /**
      * 注销用户
      *

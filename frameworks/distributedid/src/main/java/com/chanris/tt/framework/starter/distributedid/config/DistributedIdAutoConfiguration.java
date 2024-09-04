@@ -19,7 +19,7 @@ public class DistributedIdAutoConfiguration {
      * 本地 Redis 构建雪花 WorkId 选择器
      */
     @Bean
-    @ConditionalOnProperty("spring.data.redis.host")
+    @ConditionalOnProperty("spring.data.redis.host") // 如果配置文件里面有这个属性，说明项目引入redis依赖
     public LocalRedisWorkIdChoose redisWorkIdChoose() {
         return new LocalRedisWorkIdChoose();
     }

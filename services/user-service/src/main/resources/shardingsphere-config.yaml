@@ -1,11 +1,12 @@
 dataSources:
+  # 配置数据源1
   ds_0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.cj.jdbc.Driver
     jdbcUrl: jdbc:mysql://127.0.0.1:3306/tt_user_0?useUnicode=true&characterEncoding=UTF-8&rewriteBatchedStatements=true&allowMultiQueries=true&serverTimezone=Asia/Shanghai
     username: root
     password: root
-
+  # 配置数据源2
   ds_1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: com.mysql.cj.jdbc.Driver
@@ -15,17 +16,18 @@ dataSources:
 
 rules:
   - !SHARDING
+    # 数据分片规则配置
     tables:
-      t_user:
-        actualDataNodes: ds_${0..1}.t_user_${0..31}
-        databaseStrategy:
+      t_user: # 逻辑表名
+        actualDataNodes: ds_${0..1}.t_user_${0..31} # 数据节点表达式
+        databaseStrategy: # 分库策略
+          standard: # 用于单分片键的标准分片场景
+            shardingColumn: username # 分片键名称
+            shardingAlgorithmName: user_database_hash_mod # 分片算法名称
+        tableStrategy: # 分表策略
           standard:
-            shardingColumn: username
-            shardingAlgorithmName: user_database_hash_mod
-        tableStrategy:
-          standard:
-            shardingColumn: username
-            shardingAlgorithmName: user_table_hash_mod
+            shardingColumn: username # 分片键名称
+            shardingAlgorithmName: user_table_hash_mod # 分片算法名称
       t_passenger:
         actualDataNodes: ds_${0..1}.t_passenger_${0..31}
         databaseStrategy:
@@ -56,10 +58,11 @@ rules:
           standard:
             shardingColumn: phone
             shardingAlgorithmName: t_user_phone_table_hash_mod
+    # 分片算法配置
     shardingAlgorithms:
-      user_database_hash_mod:
-        type: CLASS_BASED
-        props:
+      user_database_hash_mod: # 分片算法名称
+        type: CLASS_BASED # 分片算法类型
+        props: # 分片算法属性配置
           sharding-count: 32
           table-sharding-count: 16
           strategy: standard
@@ -103,11 +106,11 @@ rules:
           sharding-count: 32
   - !ENCRYPT
     tables:
-      t_user:
+      t_user: # 加密表名称
         columns:
-          id_card:
-            cipherColumn: id_card
-            encryptorName: common_encryptor
+          id_card: # 加密列名称
+            cipherColumn: id_card # 密文列名称
+            encryptorName: common_encryptor # 密文列加密算法名称
           phone:
             cipherColumn: phone
             encryptorName: common_encryptor
@@ -126,10 +129,11 @@ rules:
             cipherColumn: phone
             encryptorName: common_encryptor
         queryWithCipherColumn: true
+    # 加密算法配置
     encryptors:
-      common_encryptor:
-        type: AES
-        props:
+      common_encryptor: # 加密算法名称
+        type: AES # 加密算法类型
+        props: # 加密算法属性配置
           aes-key-value: c6iadCLrzb8A3GWo
 props:
   sql-show: true
