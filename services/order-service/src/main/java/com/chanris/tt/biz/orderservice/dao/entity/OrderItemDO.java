@@ -50,6 +50,11 @@ public class OrderItemDO extends BaseDO {
     private String carriageNumber;
 
     /**
+     * 座位号
+     */
+    private String seatNumber;
+
+    /**
      * 座位类型
      */
     private Integer seatType;

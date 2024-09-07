@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 /**
  * @author chenyue7@foxmail.com
  * @date 2024/9/4
- * @description
+ * @description 乘车人订单关系实体
  */
 @Data
 @Builder

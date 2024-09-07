@@ -64,7 +64,7 @@ public class OrderDO extends BaseDO {
     /**
      * 订单来源
      */
-    private String source;
+    private Integer source;
 
     /**
      * 订单状态
@@ -90,6 +90,11 @@ public class OrderDO extends BaseDO {
      * 乘车日期
      */
     private Date ridingDate;
+
+    /**
+     * 出发时间
+     */
+    private Date departureTime;
 
     /**
      * 出发时间

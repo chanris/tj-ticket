@@ -15,10 +15,16 @@ public class TicketOrderItemCreateReqDTO {
      */
     private String carriageNumber;
 
+
     /**
      * 座位类型
      */
     private Integer seatType;
+
+    /**
+     * 座位号
+     */
+    private String seatNumber;
 
     /**
      * 乘车人 ID
@@ -34,6 +40,11 @@ public class TicketOrderItemCreateReqDTO {
      * 证件类型
      */
     private Integer idType;
+
+    /**
+     * 证件号
+     */
+    private String idCard;
 
     /**
      * 手机号
