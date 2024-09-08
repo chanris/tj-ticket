@@ -7,12 +7,16 @@ import com.chanris.tt.biz.ticketservice.dto.domain.TrainSeatBaseDTO;
 import com.chanris.tt.biz.ticketservice.service.TrainStationService;
 import com.chanris.tt.biz.ticketservice.service.handler.ticket.dto.SelectSeatDTO;
 import com.chanris.tt.biz.ticketservice.service.handler.ticket.dto.TrainPurchaseTicketRespDTO;
+import com.chanris.tt.framework.starter.bases.ApplicationContextHolder;
 import com.chanris.tt.framework.starter.cache.DistributedCache;
 import com.chanris.tt.framework.starter.designpattern.strategy.AbstractExecuteStrategy;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.util.List;
+
+import static com.chanris.tt.biz.ticketservice.common.constant.RedisKeyConstant.TRAIN_STATION_REMAINING_TICKET;
 
 /**
  * @author chenyue7@foxmail.com
@@ -47,12 +51,24 @@ public abstract class AbstractTrainPurchaseTicketTemplate implements IPurchaseTi
         List<TrainPurchaseTicketRespDTO> actualResult = selectSeats(requestParam);
         // 扣减车厢余票缓存，扣减站点余票缓存
         if (CollUtil.isNotEmpty(actualResult) && !StrUtil.equals(ticketAvailabilityCacheUpdateType, "binlog")) {
-            String tranId = requestParam.getRequestParam().getTrainId();
+            String trainId = requestParam.getRequestParam().getTrainId();
             String departId = requestParam.getRequestParam().getDeparture();
             String arrival = requestParam.getRequestParam().getArrival();
             StringRedisTemplate stringRedisTemplate = (StringRedisTemplate) distributedCache.getInstance();
-            List<RouteDTO> routeDTOList = trainStationService.
+            List<RouteDTO> routeDTOList = trainStationService.listTrainStationRoute(trainId, departId, arrival);
+            routeDTOList.forEach(each -> {
+                String keySuffix = StrUtil.join("_", trainId, each.getStartStation(), each.getEndStation());
+                stringRedisTemplate.opsForHash().increment(TRAIN_STATION_REMAINING_TICKET + keySuffix, String.valueOf(requestParam.getSeatType()), -actualResult.size());
+            });
         }
         return actualResult;
+    }
+
+    @Override
+    public void run(String... args) throws Exception {
+        distributedCache = ApplicationContextHolder.getBean(DistributedCache.class);
+        trainStationService = ApplicationContextHolder.getBean(TrainStationService.class);
+        ConfigurableEnvironment configurableEnvironment = ApplicationContextHolder.getBean(ConfigurableEnvironment.class);
+        ticketAvailabilityCacheUpdateType = configurableEnvironment.getProperty("ticket.availability.cache-update.type", "");
     }
 }
