@@ -1113,7 +1113,7 @@ CREATE TABLE `t_passenger_9`
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='乘车人表';
 
 USE
-12306_user_1;
+tt_user_1;
 
 CREATE TABLE `t_passenger_16`
 (

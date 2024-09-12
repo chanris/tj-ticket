@@ -32,6 +32,11 @@ public class CarriageDO extends BaseDO {
     private String carriageNumber;
 
     /**
+     * 车厢类型
+     */
+    private Integer carriageType;
+
+    /**
      * 座位数
      */
     private Integer seatCount;

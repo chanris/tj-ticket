@@ -48,6 +48,11 @@ public final class RedisKeyConstant {
     public static final String TRAIN_STATION_REMAINING_TICKET = "tt-ticket-service:train_station:remaining_ticket";
 
     /**
+     * 列车车厢查询，Key Prefix + 列车ID
+     */
+    public static final String TRAIN_CARRIAGE = "tt-ticket-service:train_carriage:";
+
+    /**
      * 列车线路信息查询，Key Prefix + 列车ID
      */
     public static final String TRAIN_STATION_STOPOVER_DETAIL = "tt-ticket-service:train_station_stopover_detail:";
@@ -63,9 +68,14 @@ public final class RedisKeyConstant {
     public static final String LOCK_PURCHASE_TICKET_V2  = "${unique-name:}tt-ticket-service:lock:purchase_ticket_%s_%d";
 
     /**
-     * 列车购买令牌桶，Key Prefix + 列车ID
+     * 获取全部地点集合 Key
      */
     public static final String QUERY_ALL_REGIN_LIST = "tt-ticket-service:query_all_region_list";
+
+    /**
+     * 列车购买令牌桶，Key Prefix + 列车ID
+     */
+    public static final String TICKET_AVAILABILITY_TOKEN_BUCKET = "tt-ticket-service:ticket_availability_token_bucket:";
 
     /**
      * 获取列车车厢数量集合分布式锁

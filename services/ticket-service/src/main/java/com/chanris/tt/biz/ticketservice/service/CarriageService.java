@@ -16,5 +16,5 @@ public interface CarriageService {
      * @param carriageTy 车厢类型
      * @return 车厢号集合
      */
-    List<String> listCarriageNumber(String trainId, Integer carriageTy);
+    List<String> listCarriageNumber(String trainId, Integer carriageType);
 }

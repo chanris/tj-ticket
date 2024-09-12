@@ -1,9 +1,14 @@
 package com.chanris.tt.biz.ticketservice.dto.resp;
 
+import com.chanris.tt.biz.ticketservice.remote.dto.TicketOrderPassengerDetailRespDTO;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author chenyue7@foxmail.com
@@ -11,48 +16,59 @@ import lombok.NoArgsConstructor;
  * @description 车票订单详情返回参数
  */
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 public class TicketOrderDetailRespDTO {
 
     /**
-     * 席别类型
+     * 订单号
      */
-    private Integer seatType;
+    private String orderSn;
 
     /**
-     * 车厢号
+     * 列车 ID
      */
-    private String carriageNumber;
+    private Long trainId;
 
     /**
-     * 座位号
+     * 出发站点
      */
-    private String seatNumber;
+    private String departure;
 
     /**
-     * 真实姓名
+     * 到达站点
      */
-    private String realName;
+    private String arrival;
 
     /**
-     * 证件类型
+     * 乘车日期
      */
-    private Integer idType;
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    private Date ridingDate;
 
     /**
-     * 证件号
+     * 订票日期
      */
-    private String idCard;
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    private Date orderTime;
 
     /**
-     * 车票类型 0：成人 1：儿童 2：学生 3：残疾军人
+     * 列车车次
      */
-    private Integer ticketType;
+    private String trainNumber;
 
     /**
-     * 订单金额
+     * 出发时间
      */
-    private Integer amount;
+    @JsonFormat(pattern = "HH:mm", timezone = "GMT+8")
+    private Date departureTime;
+
+    /**
+     * 到达时间
+     */
+    @JsonFormat(pattern = "HH:mm", timezone = "GMT+8")
+    private Date arrivalTime;
+
+    /**
+     * 乘车人订单详情
+     */
+    private List<TicketOrderPassengerDetailRespDTO> passengerDetails;
 }

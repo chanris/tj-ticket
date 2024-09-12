@@ -36,7 +36,7 @@ public abstract class AbstractTrainPurchaseTicketTemplate implements IPurchaseTi
      */
     protected abstract List<TrainPurchaseTicketRespDTO> selectSeats(SelectSeatDTO requestParam);
 
-    protected TrainSeatBaseDTO builTrainSeatBaseDTO(SelectSeatDTO requestParam) {
+    protected TrainSeatBaseDTO buildTrainSeatBaseDTO(SelectSeatDTO requestParam) {
         return TrainSeatBaseDTO.builder()
                 .trainId(requestParam.getRequestParam().getTrainId())
                 .departure(requestParam.getRequestParam().getDeparture())
