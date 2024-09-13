@@ -38,9 +38,19 @@ public class TicketListDTO {
     private String duration;
 
     /**
+     * 到达天数
+     */
+    private Integer daysArrived;
+
+    /**
      * 出发站点
      */
-    private Integer departure;
+    private String departure;
+
+    /**
+     * 到达站点
+     */
+    private String arrival;
 
     /**
      * 始发站标识

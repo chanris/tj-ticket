@@ -3,7 +3,7 @@ package com.chanris.tt.framework.starter.designpattern.strategy;
 /**
  * @author chenyue7@foxmail.com
  * @date 2024/9/1
- * @description
+ * @description 策略执行抽象
  */
 public interface AbstractExecuteStrategy<REQUEST, RESPONSE> {
     /**

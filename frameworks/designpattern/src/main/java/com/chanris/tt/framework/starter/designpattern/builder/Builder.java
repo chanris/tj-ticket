@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * @author chenyue7@foxmail.com
  * @date 2024/9/1
- * @description
+ * @description Builder 模式抽象接口
  */
 public interface Builder<T> extends Serializable {
     /**

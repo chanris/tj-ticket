@@ -51,9 +51,11 @@ public final class StationCalculateUtil {
         List<RouteDTO> takeoutStationList = new ArrayList<>();
         int startIndex = stations.indexOf(startStation);
         int endIndex = stations.indexOf(endStation);
+        // 在站点集合找不到指定的startStation 或 endStation 或 开始站点 在 结束站点之后，则返回空集合
         if (startIndex == -1 || endIndex == -1 || startIndex >= endIndex) {
             return takeoutStationList;
         }
+        // todo 24/9/13
         if (startIndex != 0) {
             for (int i = 0; i < startIndex; i++) {
                 for (int j = 1; j < stations.size() - startIndex; j++) {
@@ -71,8 +73,8 @@ public final class StationCalculateUtil {
 
     public static void main(String[] args) {
         List<String> stations = Arrays.asList("北京南", "济南西", "南京南", "杭州东", "宁波");
-        String startStation = "北京南";
-        String endStation = "南京南";
+        String startStation = "济南西";
+        String endStation = "杭州东";
         StationCalculateUtil.takeoutStation(stations, startStation, endStation).forEach(System.out::println);
     }
 }

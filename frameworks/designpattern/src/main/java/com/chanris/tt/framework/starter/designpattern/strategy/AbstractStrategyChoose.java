@@ -15,8 +15,6 @@ import java.util.regex.Pattern;
  * @author chenyue7@foxmail.com
  * @date 2024/9/1
  * @description 策略选择器
- *
- * // todo 24/9/1 看不懂
  */
 public class AbstractStrategyChoose implements ApplicationListener<ApplicationInitializingEvent> {
 
@@ -83,10 +81,16 @@ public class AbstractStrategyChoose implements ApplicationListener<ApplicationIn
         return (RESPONSE) executeStrategy.executeResp(requestParam);
     }
 
+    /**
+     * 监听 ApplicationInitializingEvent 事件
+     * 初始化策略容器
+     */
     @Override
     public void onApplicationEvent(ApplicationInitializingEvent event) {
+        // 获得策略集合
         Map<String, AbstractExecuteStrategy> actual = ApplicationContextHolder.getBeansOfType(AbstractExecuteStrategy.class);
         actual.forEach((beanName, bean) -> {
+            // 尝试初始化 策略容器，若有重复的mark则抛异常
             AbstractExecuteStrategy beanExist = abstractExecuteStrategyMap.get(bean.mark());
             if (beanExist != null) {
                 throw new ServiceException(String.format("[%s] Duplicate execution policy", bean.mark()));

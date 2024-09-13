@@ -36,7 +36,6 @@ import java.util.stream.Collectors;
  * @date 2024/9/8
  * @description 购票时列车座位选择器
  *
- * todo 24/9/8
  */
 @Slf4j
 @Component
@@ -57,12 +56,12 @@ public final class TrainSeatTypeSelector {
         if (seatTypeMap.size() > 1) {
             List<Future<List<TrainPurchaseTicketRespDTO>>> futureResults = new ArrayList<>();
             seatTypeMap.forEach((seatType, passengerSeatDetails) -> {
-                // 线程池参数如何设置？详情查看：https://nageoffer.com/12306/question
+                // 线程池参数如何设置比较合理？ todo 24/9/12
                 Future<List<TrainPurchaseTicketRespDTO>> completableFuture = selectSeatThreadPoolExecutor
                         .submit(() -> distributeSeats(trainType, seatType, requestParam, passengerSeatDetails));
                 futureResults.add(completableFuture);
             });
-            // 并行流极端情况下有坑，详情参考：https://nageoffer.com/12306/question
+            // 并行流极端情况下有哪些坑？ todo 24/9/12
             futureResults.parallelStream().forEach(completableFuture -> {
                 try {
                     actualResult.addAll(completableFuture.get());

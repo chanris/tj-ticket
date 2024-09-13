@@ -14,14 +14,23 @@ dataSources:
     password: root
 
 rules:
+  # 数据分片
   - !SHARDING
     tables:
+      # 逻辑表名
       t_order:
+        # 节点名称：由数据源 + 表名组成
         actualDataNodes: ds_${0..1}.t_order_${0..31}
+        # 分库策略
         databaseStrategy:
+          # standard, complex, hint 三选一
+          # complex 用于多分片键分片场景
           complex:
+            # 分片列名称，多个用逗号隔离
             shardingColumns: user_id,order_sn
+            # 分片算法名称，自定义
             shardingAlgorithmName: order_database_complex_mod
+        # 分表策略
         tableStrategy:
           complex:
             shardingColumns: user_id,order_sn
@@ -46,9 +55,13 @@ rules:
           standard:
             shardingColumn: id_card
             shardingAlgorithmName: order_passenger_relation_table_mod
+    # 配置自定义分片算法
     shardingAlgorithms:
+      # 分片算法名称
       order_database_complex_mod:
+        # 分片类型，表示这个算法由java代码实现
         type: CLASS_BASED
+        # 属性配置
         props:
           algorithmClassName: com.chanris.tt.biz.orderservice.dao.algorithm.OrderCommonDataBaseComplexAlgorithm
           sharding-count: 32

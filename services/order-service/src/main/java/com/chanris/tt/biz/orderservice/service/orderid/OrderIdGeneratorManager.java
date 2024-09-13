@@ -13,7 +13,7 @@ import java.util.Optional;
 /**
  * @author chenyue7@foxmail.com
  * @date 2024/9/7
- * @description
+ * @description 订单 ID 全局唯一生成器管理
  */
 @Component
 @RequiredArgsConstructor

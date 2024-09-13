@@ -13,7 +13,7 @@ public interface CarriageService {
      * 查询列车车厢号集合
      *
      * @param trainId 列车ID
-     * @param carriageTy 车厢类型
+     * @param carriageType 车厢类型
      * @return 车厢号集合
      */
     List<String> listCarriageNumber(String trainId, Integer carriageType);
