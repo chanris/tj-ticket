@@ -33,7 +33,7 @@ public final class RedisKeyConstant {
     public static final String LOCK_REGION_TRAIN_STATION = "tt-ticket-service:lock:region_train_station";
 
     /**
-     * 地区以及站点查询 key
+     * 列车站点座位价格查询，Key Prefix + 列车ID_起始城市_终点城市
      */
     public static final String TRAIN_STATION_PRICE = "tt-ticket-service:train_station_price:%s_%s_%s";
 
@@ -96,6 +96,17 @@ public final class RedisKeyConstant {
      * 列车站点缓存
      */
     public static final String STATION_ALL = "tt-ticket-service:all_station";
+
+    /**
+     * 用户购票分布式锁 Key
+     */
+    public static final String LOCK_PURCHASE_TICKETS = "${unique-name:}index12306-ticket-service:lock:purchase_tickets_%s";
+
+    /**
+     * 用户购票分布式锁 Key v2
+     */
+    public static final String LOCK_PURCHASE_TICKETS_V2 = "${unique-name:}tt-ticket-service:lock:purchase_tickets_%s_%d";
+
     /**
      * 获取全部地点集合分布式锁 Key
      */
@@ -105,6 +116,12 @@ public final class RedisKeyConstant {
      * 获取相邻座位余票分布式锁 Key
      */
     public static final String LOCK_SAFE_LOAD_SEAT_MARGIN_GET = "tt-ticket-service:lock:sage_load:seat_margin_%s";
+
+    /**
+     * 获取全部地点集合 Key
+     */
+    public static final String QUERY_ALL_REGION_LIST = "tt-ticket-service:query_all_region_list";
+
 
     /**
      * 列车购买令牌桶加载数据 Key
