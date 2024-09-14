@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import java.util.Collections;
 import java.util.List;
@@ -76,6 +77,7 @@ public class RegionStationServiceImpl implements RegionStationService {
         /**
          * queryType: region[popularFlag]
          */
+        if (requestParam.getQueryType() == null) throw new ClientException("查询失败，查询类型和名称不能同时为空");
         key = REGION_STATION + requestParam.getQueryType();
         // 构建 queryWrapper 用于 cache loader
         LambdaQueryWrapper<RegionDO> queryWrapper = switch (requestParam.getQueryType()) {

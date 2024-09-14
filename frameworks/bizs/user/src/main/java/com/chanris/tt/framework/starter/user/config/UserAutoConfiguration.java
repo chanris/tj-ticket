@@ -10,7 +10,7 @@ import static com.chanris.tt.framework.starter.bases.constant.FilterOrderConstan
 /**
  * @author chenyue7@foxmail.com
  * @date 2024/9/1
- * @description
+ * @description 用户配置自动装配
  */
 @ConditionalOnWebApplication // 当为web应用时，启用该配置类
 public class UserAutoConfiguration {

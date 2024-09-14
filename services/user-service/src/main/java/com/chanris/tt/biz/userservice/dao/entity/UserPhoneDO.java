@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@TableName("t_user_phone") // todo 24/9/2
+@TableName("t_user_phone")
 public class UserPhoneDO extends BaseDO {
 
     /**

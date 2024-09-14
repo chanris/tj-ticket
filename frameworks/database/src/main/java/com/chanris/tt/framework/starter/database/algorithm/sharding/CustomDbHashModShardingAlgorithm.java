@@ -31,7 +31,7 @@ public class CustomDbHashModShardingAlgorithm implements StandardShardingAlgorit
     }
 
     @Override
-    public String doSharding(Collection<String> availableTargetNames, PreciseShardingValue<Comparable<?>> shardingValue) {
+    public String doSharding(final Collection<String> availableTargetNames, PreciseShardingValue<Comparable<?>> shardingValue) {
         String suffix = String.valueOf(hashShardingValue(shardingValue.getValue()) % shardingCount / tableShardingCount);
         return ShardingAutoTableAlgorithmUtil.findMatchedTargetName(availableTargetNames, suffix, shardingValue.getDataNodeInfo()).orElse(null);
     }

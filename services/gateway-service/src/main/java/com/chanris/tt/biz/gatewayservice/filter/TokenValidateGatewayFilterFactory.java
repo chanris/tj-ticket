@@ -22,7 +22,7 @@ import java.util.Objects;
  * @date 2024/9/2
  * @description SpringCloud Gateway Token 拦截器
  */
-@Component
+@Component // 网关过滤器需要加入ioc容器
 public class TokenValidateGatewayFilterFactory extends AbstractGatewayFilterFactory<Config> { // AbstractGatewayFilterFactory 提供了创建自定义过滤器的基础结构，简化了自定义过滤器的开发过程。
 
     public TokenValidateGatewayFilterFactory() {
@@ -37,18 +37,24 @@ public class TokenValidateGatewayFilterFactory extends AbstractGatewayFilterFact
     @Override
     public GatewayFilter apply(Config config) {
         return (exchange, chain) -> {
+            // 获取请求
             ServerHttpRequest request = exchange.getRequest();
+            // 获取请求uri
             String requestPath = request.getPath().toString();
+            // 判断请求路径是否在黑名单列表中
             if (isPathInBlackPreList(requestPath, config.getBlackPathPre())) {
+                // 若在，需要验证token信息
                 String token = request.getHeaders().getFirst("Authorization");
                 // TODO 需要验证 Token 是否有效，有可能用户注销了账户，但是 Token 有效期还未过
                 UserInfoDTO userInfo = JWTUtil.parseJwtToken(token);
                 if (!validateToken(userInfo)) {
                     ServerHttpResponse response = exchange.getResponse();
                     response.setStatusCode(HttpStatus.UNAUTHORIZED);
+                    // 验证失败，返回response
                     return response.setComplete();
                 }
 
+                // 添加用户信息到请求头
                 ServerHttpRequest.Builder builder = exchange.getRequest().mutate().headers(httpHeaders -> {
                     httpHeaders.set(UserConstant.USER_ID_KEY, userInfo.getUserId());
                     httpHeaders.set(UserConstant.USER_NAME_KEY, userInfo.getUsername());
@@ -59,6 +65,7 @@ public class TokenValidateGatewayFilterFactory extends AbstractGatewayFilterFact
                 });
                 return chain.filter(exchange.mutate().request(builder.build()).build());
             }
+            // 验证成功，继续其他过滤器
             return chain.filter(exchange);
         };
     }

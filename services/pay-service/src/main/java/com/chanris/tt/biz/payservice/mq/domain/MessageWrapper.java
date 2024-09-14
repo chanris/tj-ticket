@@ -1,9 +1,43 @@
 package com.chanris.tt.biz.payservice.mq.domain;
 
+import lombok.*;
+
+import java.io.Serializable;
+import java.util.UUID;
+
 /**
  * @author chenyue7@foxmail.com
  * @date 2024/9/13
- * @description
+ * @description 消息体包装器
  */
-public class MessageWrapper {
+@Data
+@Builder
+@NoArgsConstructor(force = true)
+@AllArgsConstructor
+@RequiredArgsConstructor
+public final class MessageWrapper<T> implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * 消息发送 Keys
+     */
+    @NonNull
+    private String keys;
+
+    /**
+     * 消息体
+     */
+    @NonNull
+    private T message;
+
+    /**
+     * 唯一标识，用于客户端幂等验证
+     */
+    private String uuid = UUID.randomUUID().toString();
+
+    /**
+     * 消息发送时间
+     */
+    private Long timestamp = System.currentTimeMillis();
 }

@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
  * @author chenyue7@foxmail.com
  * @date 2024/9/1
  * @description 日志工具类
- * todo 24/9/1
  */
 public class LogUtil {
     /**

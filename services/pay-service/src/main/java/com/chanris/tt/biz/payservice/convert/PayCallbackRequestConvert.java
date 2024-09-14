@@ -13,7 +13,7 @@ import java.util.Objects;
  * @date 2024/9/13
  * @description
  */
-public class PayCallbackRequestConvert {
+public final class PayCallbackRequestConvert {
     /**
      * {@link PayCallbackCommand} to {@link PayCallbackRequest}
      *

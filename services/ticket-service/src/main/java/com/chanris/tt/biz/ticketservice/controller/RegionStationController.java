@@ -27,6 +27,7 @@ public class RegionStationController {
     /**
      * 查询车站&城市站点集合信息
      */
+    @GetMapping("/api/ticket-service/region-station/query")
     public Result<List<RegionStationQueryRespDTO>> listRegionStation(RegionStationQueryReqDTO requestParam) {
         return Results.success(regionStationService.listRegionStation(requestParam));
     }

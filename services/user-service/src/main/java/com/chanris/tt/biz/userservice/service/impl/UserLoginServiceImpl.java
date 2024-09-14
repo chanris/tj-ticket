@@ -121,12 +121,14 @@ public class UserLoginServiceImpl implements UserLoginService {
 
     @Override
     public boolean hasUsername(String username) {
+        // 注册一个用户就会加入到bloomFilter中
+        // 布隆过滤器存在误判(判断为true，可能存在，也可能不存在， 判断为false，一定不存在)
         boolean hasUsername = userRegisterCachePenetrationBloomFilter.contains(username);
         if (hasUsername) {
             StringRedisTemplate instance = (StringRedisTemplate) distributedCache.getInstance();
-            return instance.opsForSet().isMember(USER_REGISTER_REUSE_SHARDING + hashShardingIdx(username), username);
+            return !instance.opsForSet().isMember(USER_REGISTER_REUSE_SHARDING + hashShardingIdx(username), username);
         }
-        return true;
+        return false;
     }
 
     @Transactional(rollbackFor = Exception.class) // 业务抛异常，回滚数据库
@@ -179,11 +181,11 @@ public class UserLoginServiceImpl implements UserLoginService {
                 }
             }
             String username = requestParam.getUsername();
-            // Wrappers生成 update/delete操作对象 todo 9/3
+            // Wrappers生成 update/delete操作对象
             userReuseMapper.delete(Wrappers.update(new UserReuseDO(username)));
             StringRedisTemplate instance = (StringRedisTemplate) distributedCache.getInstance();
             instance.opsForSet().remove(USER_REGISTER_REUSE_SHARDING + hashShardingIdx(username), username);
-            // 布隆过滤器设计问题：设置多大、碰撞率以及初始容量不够了怎么办？详情查看：https://nageoffer.com/12306/question
+            // 布隆过滤器设计问题：设置多大、碰撞率以及初始容量不够了怎么办？ todo 24/9/14
             userRegisterCachePenetrationBloomFilter.add(username);
         } finally {
             lock.unlock();

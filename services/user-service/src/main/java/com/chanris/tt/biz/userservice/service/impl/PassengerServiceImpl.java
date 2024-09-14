@@ -130,6 +130,7 @@ public class PassengerServiceImpl implements PassengerService {
         delUserPassengerCache(username);
     }
 
+    // 逻辑删除
     @Override
     public void removePassenger(PassengerRemoveReqDTO requestParam) {
         String username = UserContext.getUsername();
@@ -171,6 +172,11 @@ public class PassengerServiceImpl implements PassengerService {
     }
 
     private void verifyPassenger(PassengerReqDTO requestParam) {
+        if (StrUtil.isBlank(requestParam.getRealName())
+                || StrUtil.isBlank(requestParam.getIdCard())
+                || StrUtil.isBlank(requestParam.getPhone())) {
+            throw new ClientException("乘车人信息【真实姓名或手机号或身份证ID】不能为空");
+        }
         int length = requestParam.getRealName().length();
         if (!(length >= 2 && length <= 16)) {
             throw new ClientException("乘车人名称设置2-16位的长度");

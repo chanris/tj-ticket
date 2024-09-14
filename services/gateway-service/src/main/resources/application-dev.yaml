@@ -2,11 +2,12 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: index12306-user-service
-          uri: lb://index12306-user${unique-name:}-service/api/user-service/**
+        - id: tt-user-service
+          uri: lb://tt-user${unique-name:}-service/api/user-service/**
           predicates:
             - Path=/api/user-service/**
           filters:
+            # 过滤器的名字全称 TokenValidateGatewayFilterFactory，可以只写TokenValidate
             - name: TokenValidate
               args:
                 blackPathPre:
@@ -14,9 +15,10 @@ spring:
                   - /api/user-service/query
                   - /api/user-service/logout
                   - /api/user-service/deletion
+                  - /api/user-service/update
 
-        - id: index12306-ticket-service
-          uri: lb://index12306-ticket${unique-name:}-service/api/ticket-service/**
+        - id: tt-ticket-service
+          uri: lb://tt-ticket${unique-name:}-service/api/ticket-service/**
           predicates:
             - Path=/api/ticket-service/**
           filters:
@@ -27,13 +29,13 @@ spring:
                   - /api/ticket-service/ticket/pay/query
                   - /api/ticket-service/ticket/cancel
 
-        - id: index12306-pay-service
-          uri: lb://index12306-pay${unique-name:}-service/api/pay-service/**
+        - id: tt-pay-service
+          uri: lb://tt-pay${unique-name:}-service/api/pay-service/**
           predicates:
             - Path=/api/pay-service/**
 
-        - id: index12306-order-service
-          uri: lb://index12306-order${unique-name:}-service/api/order-service/**
+        - id: tt-order-service
+          uri: lb://tt-order${unique-name:}-service/api/order-service/**
           predicates:
             - Path=/api/order-service/**
           filters:

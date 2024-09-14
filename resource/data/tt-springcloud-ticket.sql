@@ -1,5 +1,5 @@
 USE
-12306_ticket;
+tt_ticket;
 
 INSERT INTO `t_station` (`id`, `code`, `name`, `spell`, `region`, `region_name`, `create_time`, `update_time`,
                          `del_flag`)

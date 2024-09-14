@@ -45,6 +45,9 @@ public class UserInfoController {
         return Results.success(userService.queryActualUserByUsername(username));
     }
 
+    /**
+     * 用户是否存在
+     */
     @GetMapping("/api/user-service/has-username")
     public Result<Boolean> hasUsername(@RequestParam("username") @NotEmpty String username) {
         return Results.success(userLoginService.hasUsername(username));

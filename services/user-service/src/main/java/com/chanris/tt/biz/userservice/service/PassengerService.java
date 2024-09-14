@@ -39,7 +39,7 @@ public interface PassengerService {
     void savePassenger(PassengerReqDTO requestParam);
 
     /**
-     * 修改乘车人
+     * 根据username + passengerId 修改乘车人
      *
      * @param requestParam
      */

@@ -6,6 +6,7 @@ import com.chanris.tt.framework.starter.convention.errorcode.BaseErrorCode;
 import com.chanris.tt.framework.starter.convention.exception.AbstractException;
 import com.chanris.tt.framework.starter.convention.result.Result;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
@@ -13,6 +14,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Optional;
 
@@ -22,9 +24,14 @@ import java.util.Optional;
  * @description
  */
 @Slf4j
-@RestController
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    /**
+     * 拦截参数验证异常
+     */
+    @SneakyThrows
+    @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public Result validExceptionHandler(HttpServletRequest request, MethodArgumentNotValidException ex) {
         BindingResult bindingResult = ex.getBindingResult();
         FieldError firstFieldError = CollectionUtil.getFirst(bindingResult.getFieldErrors());

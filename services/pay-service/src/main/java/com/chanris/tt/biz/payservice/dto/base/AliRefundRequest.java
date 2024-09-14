@@ -2,6 +2,7 @@ package com.chanris.tt.biz.payservice.dto.base;
 
 import com.chanris.tt.biz.payservice.common.enums.PayChannelEnum;
 import com.chanris.tt.biz.payservice.common.enums.PayTradeTypeEnum;
+import com.chanris.tt.biz.payservice.common.enums.TradeStatusEnum;
 import lombok.Data;
 import lombok.experimental.Accessors;
 

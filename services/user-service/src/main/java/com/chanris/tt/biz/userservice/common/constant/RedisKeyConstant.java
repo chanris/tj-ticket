@@ -4,7 +4,6 @@ package com.chanris.tt.biz.userservice.common.constant;
  * @author chenyue7@foxmail.com
  * @date 2024/9/2
  * @description Redis Key 定义常量类
- * todo 24/9/1
  */
 public final class RedisKeyConstant {
     /**

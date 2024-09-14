@@ -22,7 +22,11 @@ import java.util.Optional;
 /**
  * @author chenyue7@foxmail.com
  * @date 2024/9/2
- * @description
+ * @description 日志切面
+ * 作用：
+ * 1.代码解耦：将日志记录逻辑从业务代码中分离出来，提高业务代码的可读性
+ * 2.日志打印：记录请求参数、响应参数、执行时间、请求路径、请求方式等，便于后续分析
+ * 3.减少代码重复：通过切面，减少重复的日志记录代码，提高代码的复用性
  */
 @Aspect
 public class ILogPrintAspect {
@@ -44,9 +48,11 @@ public class ILogPrintAspect {
             if (logAnnotation != null) {
                 ILogPrintDTO logPrint = new ILogPrintDTO();
                 logPrint.setBeginTime(beginTime);
+                // 获得方法的参数
                 if (logAnnotation.input()) {
                     logPrint.setInputParams(buildInput(joinPoint));
                 }
+                // 获得方法执行结果
                 if (logAnnotation.output()) {
                     logPrint.setOutputParams(result);
                 }

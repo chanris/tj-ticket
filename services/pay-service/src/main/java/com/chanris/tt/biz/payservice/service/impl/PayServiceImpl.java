@@ -3,12 +3,14 @@ package com.chanris.tt.biz.payservice.service.impl;
 import com.chanris.tt.biz.payservice.dto.*;
 import com.chanris.tt.biz.payservice.dto.base.PayRequest;
 import com.chanris.tt.biz.payservice.service.PayService;
+import org.springframework.stereotype.Service;
 
 /**
  * @author chenyue7@foxmail.com
  * @date 2024/9/13
  * @description 支付接口层实现
  */
+@Service
 public class PayServiceImpl implements PayService {
 
     @Override

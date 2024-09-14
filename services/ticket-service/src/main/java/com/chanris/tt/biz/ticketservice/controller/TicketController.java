@@ -45,7 +45,7 @@ public class TicketController {
             uniqueKeyPrefix = "tt-ticket:lock_purchase-tickets:",
             key = "T(com.chanris.tt.framework.starter.bases.ApplicationContextHolder).getBean('environment').getProperty('unique-name', '')"
                     + "+'_'+"
-                    + "T(com.chanris.tt.frameworks.starter.user.core.UserContext).getUsername()",
+                    + "T(com.chanris.tt.framework.starter.user.core.UserContext).getUsername()",
             message = "正在执行下单流程，请稍后...",
             scene = IdempotentSceneEnum.RESTAPI,
             type = IdempotentTypeEnum.SPEL

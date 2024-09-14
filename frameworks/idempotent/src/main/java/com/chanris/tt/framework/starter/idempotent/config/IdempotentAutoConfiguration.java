@@ -4,6 +4,9 @@ import com.chanris.tt.framework.starter.cache.DistributedCache;
 import com.chanris.tt.framework.starter.idempotent.core.IdempotentAspect;
 import com.chanris.tt.framework.starter.idempotent.core.param.IdempotentParamExecuteHandler;
 import com.chanris.tt.framework.starter.idempotent.core.param.IdempotentParamService;
+import com.chanris.tt.framework.starter.idempotent.core.spel.IdempotentSpELByMQExecuteHandler;
+import com.chanris.tt.framework.starter.idempotent.core.spel.IdempotentSpELByRestAPIExecuteHandler;
+import com.chanris.tt.framework.starter.idempotent.core.spel.IdempotentSpELService;
 import com.chanris.tt.framework.starter.idempotent.core.token.IdempotentTokenExecuteHandler;
 import com.chanris.tt.framework.starter.idempotent.core.token.IdempotentTokenService;
 import org.redisson.api.RedissonClient;
@@ -45,5 +48,23 @@ public class IdempotentAutoConfiguration {
     public IdempotentTokenService idempotentTokenExecuteHandler(DistributedCache distributedCache,
                                                                 IdempotentProperties idempotentProperties) {
         return new IdempotentTokenExecuteHandler(distributedCache, idempotentProperties);
+    }
+
+    /**
+     * SpEL 方式幂等实现，基于 RestAPI 场景
+     */
+    @Bean
+    @ConditionalOnMissingBean
+    public IdempotentSpELService idempotentSpELByRestAPIExecuteHandler(RedissonClient redissonClient) {
+        return new IdempotentSpELByRestAPIExecuteHandler(redissonClient);
+    }
+
+    /**
+     * SpEL 方式幂等实现，基于 MQ 场景
+     */
+    @Bean
+    @ConditionalOnMissingBean
+    public IdempotentSpELByMQExecuteHandler idempotentSpELByMQExecuteHandler(DistributedCache distributedCache) {
+        return new IdempotentSpELByMQExecuteHandler(distributedCache);
     }
 }

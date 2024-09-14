@@ -32,7 +32,7 @@ public class JWTUtil {
     public static String generateAccessToken(UserInfoDTO userInfo) {
         Map<String, Object> customUserMap = new HashMap<>();
         customUserMap.put(USER_ID_KEY, userInfo.getUserId());
-        customUserMap.put(USER_NAME_KEY, userInfo.getRealName());
+        customUserMap.put(USER_NAME_KEY, userInfo.getUsername());
         customUserMap.put(REAL_NAME_KEY, userInfo.getRealName());
         String jwtToken = Jwts.builder()
                 .signWith(SignatureAlgorithm.HS512, SECRET)
