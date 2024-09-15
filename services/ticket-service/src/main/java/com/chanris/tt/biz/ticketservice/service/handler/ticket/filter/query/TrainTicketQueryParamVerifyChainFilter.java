@@ -72,8 +72,8 @@ public class TrainTicketQueryParamVerifyChainFilter implements TrainTicketQueryC
                         QUERY_ALL_REGION_LIST,
                         ListUtil.toList(requestParam.getFromStation(), requestParam.getToStation())
                 );
-                emptyCount = actualExistList.stream().filter(Objects::nonNull).count();
-                if (emptyCount != 2L) {
+                emptyCount = actualExistList.stream().filter(Objects::isNull).count();
+                if (emptyCount > 0L) {
                     throw new ClientException("出发地或目的地不存在");
                 }
                 return;

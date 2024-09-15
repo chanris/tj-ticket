@@ -15,7 +15,7 @@ import org.springframework.messaging.Message;
  */
 @Slf4j
 @RequiredArgsConstructor
-public class AbstractCommonSendProduceTemplate<T> {
+public abstract class AbstractCommonSendProduceTemplate<T> {
     private final RocketMQTemplate rocketMQTemplate;
 
     /**

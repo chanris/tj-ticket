@@ -11,7 +11,7 @@ import java.util.Objects;
 /**
  * @author chenyue7@foxmail.com
  * @date 2024/9/13
- * @description
+ * @description 支付回调请求入参转换器
  */
 public final class PayCallbackRequestConvert {
     /**

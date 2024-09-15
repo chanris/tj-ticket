@@ -51,6 +51,7 @@ public class GlobalExceptionHandler {
             log.error("[{}] {} [ex] {}", request.getMethod(), request.getRequestURL().toString(), ex.toString(), ex.getCause());
             return Results.failure(ex);
         }
+        ex.printStackTrace();
         log.error("[{}] {} [ex] {}", request.getMethod(), request.getRequestURL().toString(), ex.toString());
         return Results.failure(ex);
     }

@@ -14,7 +14,7 @@ public enum SourceEnum {
     /**
      * 互联网购票
      */
-    INTERNEt(0),
+    INTERNET(0),
     /**
      * 线下窗口购票
      */

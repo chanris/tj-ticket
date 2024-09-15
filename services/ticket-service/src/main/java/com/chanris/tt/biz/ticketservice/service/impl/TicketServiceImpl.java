@@ -8,14 +8,13 @@ import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.chanris.tt.biz.ticketservice.common.enums.RefundTypeEnum;
-import com.chanris.tt.biz.ticketservice.common.enums.TicketChainMarkEnum;
-import com.chanris.tt.biz.ticketservice.common.enums.VehicleTypeEnum;
+import com.chanris.tt.biz.ticketservice.common.enums.*;
 import com.chanris.tt.biz.ticketservice.dao.entity.*;
 import com.chanris.tt.biz.ticketservice.dao.mapper.*;
 import com.chanris.tt.biz.ticketservice.dto.domain.*;
 import com.chanris.tt.biz.ticketservice.dto.req.*;
 import com.chanris.tt.biz.ticketservice.dto.resp.RefundTicketRespDTO;
+import com.chanris.tt.biz.ticketservice.dto.resp.TicketOrderDetailRespDTO;
 import com.chanris.tt.biz.ticketservice.dto.resp.TicketPageQueryRespDTO;
 import com.chanris.tt.biz.ticketservice.dto.resp.TicketPurchaseRespDTO;
 import com.chanris.tt.biz.ticketservice.remote.PayRemoteService;
@@ -38,6 +37,7 @@ import com.chanris.tt.framework.starter.common.toolkit.BeanUtil;
 import com.chanris.tt.framework.starter.convention.exception.ServiceException;
 import com.chanris.tt.framework.starter.convention.result.Result;
 import com.chanris.tt.framework.starter.designpattern.chain.AbstractChainContext;
+import com.chanris.tt.framework.starter.user.core.UserContext;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.collect.Lists;
@@ -434,7 +434,84 @@ public class TicketServiceImpl extends ServiceImpl<TicketMapper, TicketDO> imple
 
     @Override
     public TicketPurchaseRespDTO executePurchaseTickets(PurchaseTicketReqDTO requestParam) {
-        return null;
+        List<TicketOrderDetailRespDTO> ticketOrderDetailResults = new ArrayList<>();
+        String trainId = requestParam.getTrainId();
+        // 节假日高并发购票Redis能扛得住么？详情查看：https://nageoffer.com/12306/question
+        TrainDO trainDO = distributedCache.safeGet(
+                TRAIN_INFO + trainId,
+                TrainDO.class,
+                () -> trainMapper.selectById(trainId),
+                ADVANCE_TICKET_DAY,
+                TimeUnit.DAYS);
+        List<TrainPurchaseTicketRespDTO> trainPurchaseTicketResults = trainSeatTypeSelector.select(trainDO.getTrainType(), requestParam);
+        List<TicketDO> ticketDOList = trainPurchaseTicketResults.stream()
+                .map(each -> TicketDO.builder()
+                        .username(UserContext.getUsername())
+                        .trainId(Long.parseLong(requestParam.getTrainId()))
+                        .carriageNumber(each.getCarriageNumber())
+                        .seatNumber(each.getSeatNumber())
+                        .passengerId(each.getPassengerId())
+                        .ticketStatus(TicketStatusEnum.UNPAID.getCode())
+                        .build())
+                .toList();
+        saveBatch(ticketDOList);
+        Result<String> ticketOrderResult;
+        try {
+            List<TicketOrderItemCreateRemoteReqDTO> orderItemCreateRemoteReqDTOList = new ArrayList<>();
+            trainPurchaseTicketResults.forEach(each -> {
+                TicketOrderItemCreateRemoteReqDTO orderItemCreateRemoteReqDTO = TicketOrderItemCreateRemoteReqDTO.builder()
+                        .amount(each.getAmount())
+                        .carriageNumber(each.getCarriageNumber())
+                        .seatNumber(each.getSeatNumber())
+                        .idCard(each.getIdCard())
+                        .idType(each.getIdType())
+                        .phone(each.getPhone())
+                        .seatType(each.getSeatType())
+                        .ticketType(each.getUserType())
+                        .realName(each.getRealName())
+                        .build();
+                TicketOrderDetailRespDTO ticketOrderDetailRespDTO = TicketOrderDetailRespDTO.builder()
+                        .amount(each.getAmount())
+                        .carriageNumber(each.getCarriageNumber())
+                        .seatNumber(each.getSeatNumber())
+                        .idCard(each.getIdCard())
+                        .idType(each.getIdType())
+                        .seatType(each.getSeatType())
+                        .ticketType(each.getUserType())
+                        .realName(each.getRealName())
+                        .build();
+                orderItemCreateRemoteReqDTOList.add(orderItemCreateRemoteReqDTO);
+                ticketOrderDetailResults.add(ticketOrderDetailRespDTO);
+            });
+            LambdaQueryWrapper<TrainStationRelationDO> queryWrapper = Wrappers.lambdaQuery(TrainStationRelationDO.class)
+                    .eq(TrainStationRelationDO::getTrainId, trainId)
+                    .eq(TrainStationRelationDO::getDeparture, requestParam.getDeparture())
+                    .eq(TrainStationRelationDO::getArrival, requestParam.getArrival());
+            TrainStationRelationDO trainStationRelationDO = trainStationRelationMapper.selectOne(queryWrapper);
+            TicketOrderCreateRemoteReqDTO orderCreateRemoteReqDTO = TicketOrderCreateRemoteReqDTO.builder()
+                    .departure(requestParam.getDeparture())
+                    .arrival(requestParam.getArrival())
+                    .orderTime(new Date())
+                    .source(SourceEnum.INTERNET.getCode())
+                    .trainNumber(trainDO.getTrainNumber())
+                    .departureTime(trainStationRelationDO.getDepartureTime())
+                    .arrivalTime(trainStationRelationDO.getArrivalTime())
+                    .ridingDate(trainStationRelationDO.getDepartureTime())
+                    .userId(UserContext.getUserId())
+                    .username(UserContext.getUsername())
+                    .trainId(Long.parseLong(requestParam.getTrainId()))
+                    .ticketOrderItems(orderItemCreateRemoteReqDTOList)
+                    .build();
+            ticketOrderResult = ticketOrderRemoteService.createTicketOrder(orderCreateRemoteReqDTO);
+            if (!ticketOrderResult.isSuccess() || StrUtil.isBlank(ticketOrderResult.getData())) {
+                log.error("订单服务调用失败，返回结果：{}", ticketOrderResult.getMessage());
+                throw new ServiceException("订单服务调用失败");
+            }
+        } catch (Throwable ex) {
+            log.error("远程调用订单服务创建错误，请求参数：{}", JSON.toJSONString(requestParam), ex);
+            throw ex;
+        }
+        return new TicketPurchaseRespDTO(ticketOrderResult.getData(), ticketOrderDetailResults);
     }
 
     @Override
@@ -489,7 +566,7 @@ public class TicketServiceImpl extends ServiceImpl<TicketMapper, TicketDO> imple
     public RefundTicketRespDTO commonTicketRefund(RefundTicketReqDTO requestParam) {
         // 责任链模式，验证 1：参数必填
         refundReqDTOAbstractChainContext.handler(TicketChainMarkEnum.TRAIN_REFUND_TICKET_FILTER.name(), requestParam);
-        Result<TicketOrderDetailRespDTO> orderDetailRespDTOResult = ticketOrderRemoteService.queryTicketOrderByOrderSn(requestParam.getOrderSn());
+        Result<com.chanris.tt.biz.ticketservice.remote.dto.TicketOrderDetailRespDTO> orderDetailRespDTOResult = ticketOrderRemoteService.queryTicketOrderByOrderSn(requestParam.getOrderSn());
         if (!orderDetailRespDTOResult.isSuccess() && Objects.isNull(orderDetailRespDTOResult.getData())) {
             throw new ServiceException("车票订单不存在");
         }
