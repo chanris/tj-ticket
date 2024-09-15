@@ -28,7 +28,7 @@ public class PayController {
      */
     @Idempotent(
             type = IdempotentTypeEnum.SPEL,
-            uniqueKeyPrefix = "index12306-pay:lock_create_pay:",
+            uniqueKeyPrefix = "tt-pay:lock_create_pay:",
             key = "#requestParam.getOutOrderSn()"
     )
     @PostMapping("/api/pay-service/pay/create")
@@ -47,7 +47,7 @@ public class PayController {
     }
 
     /**
-     * 跟据支付流水号查询支付单详情
+     * 根据支付流水号查询支付单详情
      */
     @GetMapping("/api/pay-service/pay/query/pay-sn")
     public Result<PayInfoRespDTO> getPayInfoByPaySn(@RequestParam(value = "paySn") String paySn) {
@@ -56,7 +56,6 @@ public class PayController {
 
     /**
      * 公共退款接口
-     * 后续为了方便开发系列退款相关接口，已迁移 {@link RefundController#commonRefund(RefundReqDTO)}
      */
     @Deprecated
     @PostMapping("/api/pay-service/refund")

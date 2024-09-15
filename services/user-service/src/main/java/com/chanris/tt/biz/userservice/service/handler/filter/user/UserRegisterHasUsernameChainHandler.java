@@ -19,7 +19,7 @@ public class UserRegisterHasUsernameChainHandler implements UserRegisterCreateCh
 
     @Override
     public void handler(UserRegisterReqDTO requestParam) {
-        if (!userLoginService.hasUsername(requestParam.getUsername())) {
+        if (userLoginService.hasUsername(requestParam.getUsername())) {
             throw new ClientException(UserRegisterErrorCodeEnum.HAS_USERNAME_NOTNULL);
         }
     }
