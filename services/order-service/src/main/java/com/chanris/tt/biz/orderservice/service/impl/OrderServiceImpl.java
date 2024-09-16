@@ -67,7 +67,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, OrderDO> implemen
     private final DelayCloseOrderSendProduce delayCloseOrderSendProduce;
     private final UserRemoteService userRemoteService;
 
-
+    /**
+     * 根据订单号查询车票订单
+     *
+     * @param orderSn
+     * @return
+     */
     @Override
     public TicketOrderDetailRespDTO queryTicketOrderByOrderSn(String orderSn) {
         LambdaQueryWrapper<OrderDO> queryWrapper = Wrappers.lambdaQuery(OrderDO.class)
@@ -82,6 +87,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, OrderDO> implemen
         return result;
     }
 
+    /**
+     * 根据用户名分页查询车票订单
+     *
+     * @param requestParam
+     */
     @Override
     public PageResponse<TicketOrderDetailRespDTO> pageTicketOrder(TicketOrderPageQueryReqDTO requestParam) {
         LambdaQueryWrapper<OrderDO> queryWrapper = Wrappers.lambdaQuery(OrderDO.class)
@@ -99,6 +109,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, OrderDO> implemen
         });
     }
 
+    /**
+     * 创建火车票订单
+     *
+     * @param requestParam 创建火车票订单入参
+     * @return
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public String createTicketOrder(TicketOrderCreateReqDTO requestParam) {
@@ -173,7 +189,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, OrderDO> implemen
     @Transactional(rollbackFor = Exception.class)
     public boolean closeTickOrder(CancelTicketOrderReqDTO requestParam) {
         String orderSn = requestParam.getOrderSn();
-        LambdaQueryWrapper<OrderDO> queryWrapper = Wrappers.lambdaQuery(OrderDO.class) // todo 24/9/8
+        LambdaQueryWrapper<OrderDO> queryWrapper = Wrappers.lambdaQuery(OrderDO.class)
                 .eq(OrderDO::getOrderSn, orderSn)
                 .select(OrderDO::getStatus);
         OrderDO orderDO = orderMapper.selectOne(queryWrapper);
@@ -232,6 +248,11 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, OrderDO> implemen
         return true;
     }
 
+    /**
+     * 修改订单状态
+     *
+     * @param requestParam 请求参数
+     */
     @Override
     public void statusReversal(OrderStatusReversalDTO requestParam) {
         // 获得订单实体信息
@@ -254,7 +275,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, OrderDO> implemen
             OrderDO updateOrderDO = new OrderDO();
             updateOrderDO.setStatus(requestParam.getOrderStatus());
             LambdaQueryWrapper<OrderDO> updateWrapper = Wrappers.lambdaQuery(OrderDO.class)
-                    .eq(OrderDO::getOrderSn, requestParam.getOrderStatus());
+                    .eq(OrderDO::getOrderSn, requestParam.getOrderSn());
             int updateResult = orderMapper.update(updateOrderDO, updateWrapper);
             // 更新失败，抛异常
             if (updateResult <= 0) {
@@ -274,12 +295,18 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, OrderDO> implemen
         }
     }
 
+    /**
+     * 支付结果回调订单
+     *
+     * @param requestParam 请求参数
+     */
     @Override
     public void payCallbackOrder(PayResultCallbackOrderEvent requestParam) {
-        // todo 24/9/6
+        // 修改订单支付状态
         OrderDO updateOrderDO = new OrderDO();
         updateOrderDO.setPayTime(requestParam.getGmtPayment());
         updateOrderDO.setPayType(requestParam.getChannel());
+        // 根据orderSn 查询 订单信息并修改
         LambdaQueryWrapper<OrderDO> updateWrapper = Wrappers.lambdaQuery(OrderDO.class)
                 .eq(OrderDO::getOrderSn, requestParam.getOrderSn());
         int updateResult = orderMapper.update(updateOrderDO, updateWrapper);

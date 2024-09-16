@@ -47,7 +47,9 @@ public class PayResultCallbackOrderConsumer implements RocketMQListener<MessageW
                 .orderStatus(OrderStatusEnum.ALREADY_PAID.getStatus())
                 .orderItemStatus(OrderItemStatusEnum.ALREADY_PAID.getStatus())
                 .build();
+        // 修改订单状态，无报错，则说明支付成功
         orderService.statusReversal(orderStatusReversalDTO);
+        // 修改订单支付时间信息
         orderService.payCallbackOrder(payResultCallbackOrderEvent);
     }
 }

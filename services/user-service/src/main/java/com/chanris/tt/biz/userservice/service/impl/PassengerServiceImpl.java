@@ -103,6 +103,7 @@ public class PassengerServiceImpl implements PassengerService {
                 log.error("[{}] 新增乘车人失败，请求参数：{}", username, JSON.toJSONString(requestParam), ex);
             }
         }
+        delUserPassengerCache(username);
     }
 
     @Override

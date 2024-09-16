@@ -73,6 +73,11 @@ public class PayServiceImpl implements PayService {
         return BeanUtil.convert(result, PayRespDTO.class);
     }
 
+    /**
+     * 支付单回调
+     *
+     * @param requestParam 回调支付单实体
+     */
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void callbackPay(PayCallbackReqDTO requestParam) {
@@ -89,7 +94,9 @@ public class PayServiceImpl implements PayService {
         payDO.setGmtPayment(requestParam.getGmtPayment());
         LambdaUpdateWrapper<PayDO> updateWrapper = Wrappers.lambdaUpdate(PayDO.class)
                 .eq(PayDO::getOrderSn, requestParam.getOrderSn());
+        // 更新支付状态
         int result = payMapper.update(payDO, updateWrapper);
+        // 修改失败，抛异常
         if (result <= 0) {
             log.error("修改支付单支付结果失败，支付单信息：{}", JSON.toJSONString(payDO));
             throw new ServiceException("修改支付单支付结果失败");

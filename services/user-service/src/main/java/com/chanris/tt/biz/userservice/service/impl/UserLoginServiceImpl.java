@@ -66,6 +66,7 @@ public class UserLoginServiceImpl implements UserLoginService {
     public UserLoginRespDTO login(UserLoginReqDTO requestParam) {
         String usernameOrMailOrPhone = requestParam.getUsernameOrMailOrPhone();
         boolean mailFlag = false;
+        // 有'@'字符，邮箱标志置为true
         for (char c : usernameOrMailOrPhone.toCharArray()) {
             if (c == '@') {
                 mailFlag = true;
@@ -104,14 +105,17 @@ public class UserLoginServiceImpl implements UserLoginService {
             distributedCache.put(accessToken, JSON.toJSONString(actual), 30, TimeUnit.MINUTES);
             return actual;
         }
+        // userDO 还是 null，则说明 email or phone or username 不存在，抛异常
         throw new ServiceException("账号不存在或密码错误");
     }
 
+    // 检查是否登录
     @Override
     public UserLoginRespDTO checkLogin(String accessToken) {
         return distributedCache.get(accessToken, UserLoginRespDTO.class);
     }
 
+    // 退出登录：实际逻辑清除token缓存
     @Override
     public void logout(String accessToken) {
         if (StrUtil.isNotBlank(accessToken)) {
@@ -123,6 +127,7 @@ public class UserLoginServiceImpl implements UserLoginService {
     public boolean hasUsername(String username) {
         // 注册一个用户就会加入到bloomFilter中
         // 布隆过滤器存在误判(判断为true，可能存在，也可能不存在， 判断为false，一定不存在)
+        // todo username不存在，bloomFilter误判为true的情况未考虑
         boolean hasUsername = userRegisterCachePenetrationBloomFilter.contains(username);
         if (hasUsername) {
             StringRedisTemplate instance = (StringRedisTemplate) distributedCache.getInstance();
