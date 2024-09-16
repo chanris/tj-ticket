@@ -57,7 +57,7 @@ public class PayServiceImpl implements PayService {
         /**
          * {@link AliPayNativeHandler}
          */
-        // 策略模式：通过策略模式封装支付渠道和支付场景，用户支付时动态选择对应的支付组件
+        // 策略模式：通过策略模式封装支付渠道和支付场景，用户支付时动态选择对应的支付组件 todo 24/9/15
         PayResponse result = abstractStrategyChoose.chooseAndExecuteResp(requestParam.buildMark(), requestParam);
         PayDO insertPay = BeanUtil.convert(requestParam, PayDO.class);
         String paySn = PayIdGeneratorManager.generateId(requestParam.getOrderSn());

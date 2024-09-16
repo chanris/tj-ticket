@@ -39,7 +39,7 @@ public class PayController {
     }
 
     /**
-     * 跟据订单号查询支付单详情
+     * 根据订单号查询支付单详情
      */
     @GetMapping("/api/pay-service/pay/query/order-sn")
     public Result<PayInfoRespDTO> getPayInfoByOrderSn(@RequestParam(value = "orderSn") String orderSn) {
