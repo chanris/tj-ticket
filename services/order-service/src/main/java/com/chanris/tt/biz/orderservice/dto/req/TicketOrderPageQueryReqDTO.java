@@ -14,7 +14,7 @@ public class TicketOrderPageQueryReqDTO extends PageRequest {
     /**
      * 用户唯一标识
      */
-    private String id;
+    private String userId;
 
     /**
      * 状态类型：0：未完成 1：未出现 2：历史订单

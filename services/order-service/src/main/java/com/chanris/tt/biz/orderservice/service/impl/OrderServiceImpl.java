@@ -85,8 +85,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, OrderDO> implemen
     @Override
     public PageResponse<TicketOrderDetailRespDTO> pageTicketOrder(TicketOrderPageQueryReqDTO requestParam) {
         LambdaQueryWrapper<OrderDO> queryWrapper = Wrappers.lambdaQuery(OrderDO.class)
-                .eq(OrderDO::getUserId, requestParam.getId())
-                .eq(OrderDO::getStatus, buildOrderStatusList(requestParam))
+                .eq(OrderDO::getUserId, requestParam.getUserId())
+                .in(OrderDO::getStatus, buildOrderStatusList(requestParam))
                 .orderByDesc(OrderDO::getOrderTime);
         IPage<OrderDO> orderPage = orderMapper.selectPage(PageUtil.convert(requestParam), queryWrapper);
         return PageUtil.convert(orderPage, each ->  {
@@ -288,6 +288,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, OrderDO> implemen
         }
     }
 
+    /**
+     * 查询本人车票订单
+     *
+     * @param requestParam 请求参数
+     * @return 本人车票订单集合
+     */
     @Override
     public PageResponse<TicketOrderDetailSelfRespDTO> pageSelfTicketOrder(TicketOrderSelfPageQueryReqDTO requestParam) {
         // 远程调用获得用户信息

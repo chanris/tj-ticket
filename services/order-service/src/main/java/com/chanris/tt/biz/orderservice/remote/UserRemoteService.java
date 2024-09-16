@@ -14,6 +14,6 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 @FeignClient(value = "tt-user${unique-name:}-service", url = "${aggregation.remote-url:}")
 public interface UserRemoteService {
-    @GetMapping
+    @GetMapping("/api/user-service/actual/query")
     Result<UserQueryActualRespDTO> queryActualUserByUsername(@RequestParam("username") @NotEmpty String username);
 }

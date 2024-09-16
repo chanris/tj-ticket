@@ -45,6 +45,7 @@ public class TicketOrderController {
 
     /**
      * 分页查询车票订单
+     * Crane4j：介绍 {@link <a href="https://github.com/javalibrary/crane4j/blob/dev/README.md">README</a>}
      */
     @AutoOperate(type = TicketOrderDetailRespDTO.class, on = "data.records") // todo 24/9/8
     @GetMapping("/api/order-service/order/ticket/page")
