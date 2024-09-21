@@ -42,7 +42,7 @@ public abstract class AbstractCommonSendProduceTemplate<T> {
      * 消息事件通用发送
      *
      * @param messageSendEvent 消息发送时间
-     * @return
+     * @return 发送结果
      */
     public SendResult sendMessage(T messageSendEvent) {
         BaseSendExtendDTO baseSendExtendDTO = buildBaseSendExtendParam(messageSendEvent);

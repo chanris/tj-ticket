@@ -19,14 +19,17 @@ import org.springframework.stereotype.Component;
  * @author chenyue7@foxmail.com
  * @date 2024/9/5
  * @description 支付结果回调订单消费者
- * todo 24/9/5
+ *
  */
 @Slf4j
 @Component
 @RequiredArgsConstructor
 @RocketMQMessageListener(
+        // 指定topic名称
         topic = OrderRocketMQConstant.PAY_GLOBAL_TOPIC_KEY,
+        // 指定tag
         selectorExpression = OrderRocketMQConstant.PAY_RESULT_CALLBACK_TAG_KEY,
+        // 指定消费组
         consumerGroup = OrderRocketMQConstant.PAY_RESULT_CALLBACK_ORDER_CG_KEY
 )
 public class PayResultCallbackOrderConsumer implements RocketMQListener<MessageWrapper<PayResultCallbackOrderEvent>> {

@@ -5,7 +5,7 @@ import org.springframework.core.Ordered;
 /**
  * @author chenyue7@foxmail.com
  * @date 2024/9/1
- * @description
+ * @description 抽象责任链处理器
  */
 public interface AbstractChainHandler<T> extends Ordered {
     /**

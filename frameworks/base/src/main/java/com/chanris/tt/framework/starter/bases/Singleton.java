@@ -12,6 +12,8 @@ import java.util.function.Supplier;
  */
 @NoArgsConstructor
 public class Singleton {
+
+    // 单例容器
     private static final ConcurrentHashMap<String, Object> SINGLE_OBJECT_POOL = new ConcurrentHashMap<>();
 
     /**

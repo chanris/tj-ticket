@@ -125,11 +125,25 @@ public class StringRedisTemplateProxy implements DistributedCache {
         return safeGet(key, clazz, cacheLoader, timeout, redisProperties.getValueTimeUnit(), bloomFilter, cacheGetFilter, cacheGetIfAbsent);
     }
 
+    /**
+     * 安全获取key方法
+     * @param key Key名称
+     * @param clazz 结果类型
+     * @param cacheLoader cacheLoader(lambda表达式，从数据库从取数据)
+     * @param timeout 过期时间
+     * @param timeUnit 时间单位
+     * @param bloomFilter 布隆过滤器
+     * @param cacheGetFilter 缓存过期器
+     * @param cacheGetIfAbsent 缓存获取失败回调
+     * @return 获取的结果
+     * @param <T> 转换的类型
+     */
     @Override
     public <T> T safeGet(String key, Class<T> clazz, CacheLoader<T> cacheLoader, long timeout, TimeUnit timeUnit,
                          RBloomFilter<String> bloomFilter, CacheGetFilter<String> cacheGetFilter, CacheGetIfAbsent<String> cacheGetIfAbsent) {
         T result = get(key, clazz);
-        // 缓存结果不等于空或空字符串直接返回；通过函数判断是否返回空，为了适配布隆过滤器无法删除的场景；两者都不成立，判断布隆过滤器是否存在，不存在返回空
+        // 缓存结果不等于空或空字符串直接返回；通过函数判断是否返回空，为了适配布隆过滤器无法删除的场景；
+        // 两者都不成立，判断布隆过滤器是否存在，不存在返回空
         if (!CacheUtil.isNullOrBlank(result)
                 || Optional.ofNullable(cacheGetFilter).map(each -> each.filter(key)).orElse(false)
                 || Optional.ofNullable(bloomFilter).map(each -> !each.contains(key)).orElse(false)) {

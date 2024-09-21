@@ -46,7 +46,7 @@ import static com.chanris.tt.biz.ticketservice.common.constant.TTConstant.ADVANC
 /**
  * @author chenyue7@foxmail.com
  * @date 2024/9/8
- * @description
+ * @description 列车车票余量令牌桶，应对海量并发场景下满足并行、限流以及防超卖等场景
  */
 @Slf4j
 @Component
@@ -71,27 +71,33 @@ public final class TicketAvailabilityTokenBucket {
      * @return 是否获取列车车票余量令牌桶中的令牌返回结果
      */
     public TokenResultDTO takeTokenFromBucket(PurchaseTicketReqDTO requestParam) {
+        // 获取列车实体
         TrainDO trainDO = distributedCache.safeGet(
                 TRAIN_INFO + requestParam.getTrainId(),
                 TrainDO.class,
                 () -> trainMapper.selectById(requestParam.getTrainId()),
                 ADVANCE_TICKET_DAY,
                 TimeUnit.DAYS);
+        // 获取列车站点信息
         List<RouteDTO> routeDTOList = trainStationService
                 .listTrainStationRoute(requestParam.getTrainId(), trainDO.getStartStation(), trainDO.getEndStation());
         StringRedisTemplate stringRedisTemplate = (StringRedisTemplate) distributedCache.getInstance();
         String tokenBucketHashKey = TICKET_AVAILABILITY_TOKEN_BUCKET + requestParam.getTrainId();
+        // 判断 trainId 的 key 是否存在
         Boolean hasKey = distributedCache.hasKey(tokenBucketHashKey);
         if (!hasKey) {
             RLock lock = redissonClient.getLock(String.format(LOCK_TICKET_AVAILABILITY_TOKEN_BUCKET, requestParam.getTrainId()));
+            // 获取一次锁
             if (!lock.tryLock()) {
                 throw new ServiceException("购票异常，请稍候再试");
             }
             try {
                 Boolean hasKeyTwo = distributedCache.hasKey(tokenBucketHashKey);
+                //
                 if (!hasKeyTwo) {
                     List<Integer> seatTypes = VehicleTypeEnum.findSeatTypesByCode(trainDO.getTrainType());
                     Map<String, String> ticketAvailabilityTokenMap = new HashMap<>();
+                    // 查询数据库，获得列车购票余量
                     for (RouteDTO each : routeDTOList) {
                         List<SeatTypeCountDTO> seatTypeCountDTOList = seatService.listSeatTypeCount(Long.parseLong(requestParam.getTrainId()), each.getStartStation(), each.getEndStation(), seatTypes);
                         for (SeatTypeCountDTO eachSeatTypeCountDTO : seatTypeCountDTOList) {
@@ -99,6 +105,7 @@ public final class TicketAvailabilityTokenBucket {
                             ticketAvailabilityTokenMap.put(buildCacheKey, String.valueOf(eachSeatTypeCountDTO.getSeatCount()));
                         }
                     }
+                    // 列出余票数据载入 余量桶
                     stringRedisTemplate.opsForHash().putAll(TICKET_AVAILABILITY_TOKEN_BUCKET + requestParam.getTrainId(), ticketAvailabilityTokenMap);
                 }
             } finally {

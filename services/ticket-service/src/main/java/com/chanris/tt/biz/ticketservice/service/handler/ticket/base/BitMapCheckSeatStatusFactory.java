@@ -9,17 +9,19 @@ import com.chanris.tt.framework.starter.bases.Singleton;
  */
 public abstract class BitMapCheckSeatStatusFactory {
 
-    public static final String TRAIN_BUSINESS = "TRAIN_BUSINESS";
+    public static final String TRAIN_BUSINESS = "TRAIN_BUSINESS"; // 商务类型
 
-    public static final String TRAIN_FIRST = "TRAIN_FIRST";
+    public static final String TRAIN_FIRST = "TRAIN_FIRST"; // 一等
 
-    public static final String TRAIN_SECOND = "TRAIN_SECOND";
+    public static final String TRAIN_SECOND = "TRAIN_SECOND"; // 二等
 
     public static BitMapCheckSeat getInstance(String mark) {
         BitMapCheckSeat instance = null;
         switch (mark) {
             case TRAIN_BUSINESS -> {
+                // 获得对象
                 instance = Singleton.get(TRAIN_BUSINESS);
+                // 如果 instance == null ，则创建对象，并放入缓存中
                 if (instance == null) {
                     instance = new TrainBusinessCheckSeat();
                     Singleton.put(TRAIN_BUSINESS, instance);

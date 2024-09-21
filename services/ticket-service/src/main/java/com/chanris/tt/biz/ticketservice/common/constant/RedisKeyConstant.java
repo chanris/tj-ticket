@@ -23,7 +23,7 @@ public final class RedisKeyConstant {
     public static final String LOCK_REGION_TRAIN_STATION_MAPPING = "tt-ticket-service:lock:region_train_station_mapping";
 
     /**
-     * 站点查询， Key Prefix + 起始城市_终点城市_日期
+     * 站点查询， Key Prefix + 起始城市_终点城市
      */
     public static final String REGION_TRAIN_STATION = "tt-ticket-service:region_train_station:%s_%s";
 

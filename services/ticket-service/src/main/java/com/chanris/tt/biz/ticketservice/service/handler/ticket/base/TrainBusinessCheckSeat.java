@@ -55,7 +55,7 @@ public class TrainBusinessCheckSeat implements TrainBitMapCheckSeat {
     }
 
     /**
-     * 高铁商务座选择座位是否被占用
+     * 高铁商务座选择座位是否被占用 v2
      *
      * @param chooseSeatList 选择座位
      * @param actualSeats    座位状态数组

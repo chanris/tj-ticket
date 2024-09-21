@@ -1,3 +1,4 @@
+
 local inputString = KEYS[2]
 local actualKey = inputString
 local colonIndex = string.find(actualKey, ":")

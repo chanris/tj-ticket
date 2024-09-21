@@ -30,7 +30,7 @@ import static com.chanris.tt.biz.ticketservice.service.handler.ticket.base.BitMa
  * @author chenyue7@foxmail.com
  * @date 2024/9/8
  * @description 高铁商务座购票组件
- * todo 24/9/8
+ * 策略模式
  */
 @Component
 @RequiredArgsConstructor
@@ -45,18 +45,35 @@ public class TrainBusinessClassPurchaseTicketHandler extends AbstractTrainPurcha
         return VehicleTypeEnum.HIGH_SPEED_RAIN.getName() + VehicleSeatTypeEnum.BUSINESS_CLASS.getName();
     }
 
+    /**
+     * 获取
+     *
+     * @param requestParam 购票请求入参
+     * @return
+     */
     @Override
     protected List<TrainPurchaseTicketRespDTO> selectSeats(SelectSeatDTO requestParam) {
+        // 获得trainId
         String trainId = requestParam.getRequestParam().getTrainId();
+        // 获取出发站点
         String departure = requestParam.getRequestParam().getDeparture();
+        // 获取到达站点
         String arrival = requestParam.getRequestParam().getArrival();
+        // 乘车人集合
         List<PurchaseTicketPassengerDetailDTO> passengerSeatDetails = requestParam.getPassengerSeatDetails();
+        // 获得有余票的车厢集合
         List<String> trainCarriageList = seatService.listUsableCarriageNumber(trainId, requestParam.getSeatType(), departure, arrival);
+        // 获得车厢的余票集合
         List<Integer> trainStationCarriageRemainingTicket = seatService.listSeatRemainingTicket(trainId, departure, arrival, trainCarriageList);
+        // 计算总余票数
         int remainingTicketSum = trainStationCarriageRemainingTicket.stream().mapToInt(Integer::intValue).sum();
+        // 如果乘客数大于剩余票数，抛异常
         if (remainingTicketSum < passengerSeatDetails.size()) {
             throw new ServiceException("站点余票不足，请尝试更换座位类型或选择其它站点");
         }
+        // 该函数根据passengerSeatDetails 列表的大小决定座位选择逻辑
+        // 1. 若元素少于3个且请求参数中有指定座位，则调用findMatchSeats方法返回匹配座位； 若无指定座位，则调用selectSeats方法
+        // 2. 若元素多余或等于3个且请求参数中有指定座位，则调用findMatchSeats方法返回匹配座位；若无指定座位，则调用selectComplexSeats 方法处理
         if (passengerSeatDetails.size() < 3) {
             if (CollUtil.isNotEmpty(requestParam.getRequestParam().getChooseSeats())) {
                 Pair<List<TrainPurchaseTicketRespDTO>, Boolean> actualSeatPair = findMatchSeats(requestParam, trainCarriageList, trainStationCarriageRemainingTicket);
@@ -72,11 +89,21 @@ public class TrainBusinessClassPurchaseTicketHandler extends AbstractTrainPurcha
         }
     }
 
-    // todo 24/9/8
+    /**
+     *
+     * @param requestParam
+     * @param trainCarriageList
+     * @param trainStationCarriageRemainingTicket
+     * @return
+     */
     private Pair<List<TrainPurchaseTicketRespDTO>, Boolean> findMatchSeats(SelectSeatDTO requestParam, List<String> trainCarriageList, List<Integer> trainStationCarriageRemainingTicket) {
+        // 获得请求参数
         TrainSeatBaseDTO trainSeatBaseDTO = buildTrainSeatBaseDTO(requestParam);
+        // 获得选择的座位数量
         int chooseSeatSize = trainSeatBaseDTO.getChooseSeatList().size();
+        // 列车购票出参, 一个乘车人对应一个 TrainPurchaseTicketRespDTO
         List<TrainPurchaseTicketRespDTO> actualResult = Lists.newArrayListWithCapacity(trainSeatBaseDTO.getPassengerSeatDetails().size());
+        //
         BitMapCheckSeat instance = BitMapCheckSeatStatusFactory.getInstance(TRAIN_BUSINESS);
         HashMap<String, List<Pair<Integer, Integer>>> carriagesSeatMap = new HashMap<>(4);
         int passengersNumber = trainSeatBaseDTO.getPassengerSeatDetails().size();

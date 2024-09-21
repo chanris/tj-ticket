@@ -134,6 +134,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, OrderDO> implemen
                 .username(requestParam.getUsername())
                 .userId(String.valueOf(requestParam.getUserId()))
                 .build();
+        // 插入订单实体
         orderMapper.insert(orderDO);
         List<TicketOrderItemCreateReqDTO> ticketOrderItems = requestParam.getTicketOrderItems();
         List<OrderItemDO> orderItemDOList = new ArrayList<>();
@@ -164,7 +165,9 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, OrderDO> implemen
                     .build();
             orderPassengerRelationDOList.add(orderItemPassengerDO);
         });
+        // 插入订单项实体
         orderItemService.saveBatch(orderItemDOList);
+        // 保存订单和乘车人关系实体
         orderPassengerRelationService.saveBatch(orderPassengerRelationDOList);
         try {
             // 发送 RocketMQ 延迟消息，指定时间后取消订单
@@ -175,7 +178,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, OrderDO> implemen
                     .orderSn(orderSn)
                     .trainPurchaseTicketResults(requestParam.getTicketOrderItems())
                     .build();
-            // 创建订单并支付后延迟关闭订单消息怎么办？ todo 24/9/8
+            // 创建订单并支付后延迟关闭订单消息怎么办？
             SendResult sendResult = delayCloseOrderSendProduce.sendMessage(delayCloseOrderEvent);
             if (!Objects.equals(sendResult.getSendStatus(), SendStatus.SEND_OK)) {
                 throw new ServiceException("投递延迟关闭订单消息队列失败");

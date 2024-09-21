@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * @author chenyue7@foxmail.com
  * @date 2024/9/8
- * @description
+ * @description 座位服务
  */
 public interface SeatService extends IService<SeatDO> {
 
