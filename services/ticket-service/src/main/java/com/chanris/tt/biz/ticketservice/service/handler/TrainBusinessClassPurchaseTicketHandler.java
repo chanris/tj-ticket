@@ -103,11 +103,14 @@ public class TrainBusinessClassPurchaseTicketHandler extends AbstractTrainPurcha
         int chooseSeatSize = trainSeatBaseDTO.getChooseSeatList().size();
         // 列车购票出参, 一个乘车人对应一个 TrainPurchaseTicketRespDTO
         List<TrainPurchaseTicketRespDTO> actualResult = Lists.newArrayListWithCapacity(trainSeatBaseDTO.getPassengerSeatDetails().size());
-        //
+        // 获得验证座位是否可用对象
         BitMapCheckSeat instance = BitMapCheckSeatStatusFactory.getInstance(TRAIN_BUSINESS);
+        //
         HashMap<String, List<Pair<Integer, Integer>>> carriagesSeatMap = new HashMap<>(4);
+        // 乘车人个数
         int passengersNumber = trainSeatBaseDTO.getPassengerSeatDetails().size();
         for (int i = 0; i < trainStationCarriageRemainingTicket.size(); i++) {
+            //
             String carriagesNumber = trainCarriageList.get(i);
             List<String> listAvailableSeat = seatService.listAvailableSeat(trainSeatBaseDTO.getTrainId(), carriagesNumber, requestParam.getSeatType(), trainSeatBaseDTO.getDeparture(), trainSeatBaseDTO.getArrival());
             int[][] actualSeats = new int[2][3];

@@ -99,6 +99,7 @@ public final class TrainSeatTypeSelector {
         Result<List<PassengerRespDTO>> passengerRemoteResult;
         List<PassengerRespDTO> passengerRemoteResultList;
         try {
+            // 根据 passenger id 查询 passenger entity
             passengerRemoteResult = userRemoteService.listPassengerQueryByIds(UserContext.getUsername(), passengerIds);
             if (!passengerRemoteResult.isSuccess() || CollUtil.isEmpty(passengerRemoteResultList = passengerRemoteResult.getData())) {
                 throw new RemoteException("用户服务远程调用查询乘车人相关信息错误");

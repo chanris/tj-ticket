@@ -156,6 +156,7 @@ public class SeatServiceImpl extends ServiceImpl<SeatMapper, SeatDO> implements 
                     .eq(SeatDO::getStartStation, item.getStartStation())
                     .eq(SeatDO::getEndStation, item.getEndStation())
                     .eq(SeatDO::getSeatNumber, each.getSeatNumber());
+            // 将座位的状态修改为LOCKED
             SeatDO updateSeatDO = SeatDO.builder()
                     .seatStatus(SeatStatusEnum.LOCKED.getCode())
                     .build();
