@@ -71,7 +71,6 @@ public final class TicketAvailabilityTokenBucket {
      * @return 是否获取列车车票余量令牌桶中的令牌返回结果
      */
     public TokenResultDTO takeTokenFromBucket(PurchaseTicketReqDTO requestParam) {
-
         //************************************ 载入并获取列车余票桶 开始 *************************************************
         // 缓存获取列车实体
         TrainDO trainDO = distributedCache.safeGet(
@@ -108,7 +107,10 @@ public final class TicketAvailabilityTokenBucket {
                     Map<String, String> ticketAvailabilityTokenMap = new HashMap<>();
                     // 查询数据库，获得列车购票余量
                     for (RouteDTO each : routeDTOList) {
-                        List<SeatTypeCountDTO> seatTypeCountDTOList = seatService.listSeatTypeCount(Long.parseLong(requestParam.getTrainId()), each.getStartStation(), each.getEndStation(), seatTypes);
+                        List<SeatTypeCountDTO> seatTypeCountDTOList = seatService.listSeatTypeCount(Long.parseLong(requestParam.getTrainId()),
+                                each.getStartStation(),
+                                each.getEndStation(),
+                                seatTypes);
                         for (SeatTypeCountDTO eachSeatTypeCountDTO : seatTypeCountDTOList) {
                             // 起始站名称_终点站名称_座位类型
                             String buildCacheKey = StrUtil.join("_", each.getStartStation(), each.getEndStation(), eachSeatTypeCountDTO.getSeatType());
@@ -158,6 +160,7 @@ public final class TicketAvailabilityTokenBucket {
         // 获得执行的结果
         TokenResultDTO result = JSON.parseObject(resultStr, TokenResultDTO.class);
         return result == null
+                // result为null 默认执行失败
                 ? TokenResultDTO.builder().tokenIsNull(Boolean.TRUE).build()
                 : result;
     }

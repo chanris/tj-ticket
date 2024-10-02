@@ -364,7 +364,7 @@ public class TicketServiceImpl extends ServiceImpl<TicketMapper, TicketDO> imple
         // 为什么需要令牌限流？余票缓存限流不可以么？
         TokenResultDTO tokenResult = ticketAvailabilityTokenBucket.takeTokenFromBucket(requestParam);
         // 判断tokenIsNull 标志 是否为 true
-        // 若为true 则说明扣减失败，
+        // 若为true 则说明扣减失败，没有余票，抛异常
         if (tokenResult.getTokenIsNull()) {
             // 获得车票的缓存对象
             Object ifPresentObj = tokenTicketsRefreshMap.getIfPresent(requestParam.getTrainId());
@@ -386,12 +386,15 @@ public class TicketServiceImpl extends ServiceImpl<TicketMapper, TicketDO> imple
         // 写了详细的 v2 版本购票升级指南
         List<ReentrantLock> localLockList = new ArrayList<>();
         List<RLock> distributedLockList = new ArrayList<>();
+        // 根据座位类型将乘车人Id分类
         Map<Integer, List<PurchaseTicketPassengerDetailDTO>> seatTypeMap = requestParam.getPassengers().stream()
                 .collect(Collectors.groupingBy(PurchaseTicketPassengerDetailDTO::getSeatType));
-        seatTypeMap.forEach((searType, count) -> {
+        seatTypeMap.forEach((seatType, count) -> {
             // 获得锁的名称
-            String lockKey = environment.resolvePlaceholders(String.format(LOCK_PURCHASE_TICKETS_V2, requestParam.getTrainId(), searType));
-            // 根据分布式锁的名称 获得本地锁
+            // environment.resolvePlaceholders 用来解决 ${unique-name:}的问题， 将环境变量中 unique-name的值填充在此；
+            // 本地锁映射名称,分布式锁名称=>(购票锁前缀+列车ID+座位类型)
+            String lockKey = environment.resolvePlaceholders(String.format(LOCK_PURCHASE_TICKETS_V2, requestParam.getTrainId(), seatType));
+            // 根据分布式锁的名称 获得Caffeine中的本地锁
             ReentrantLock localLock = localLockMap.getIfPresent(lockKey);
             // 如果本地锁不存在
             if (localLock == null) {

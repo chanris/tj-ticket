@@ -58,6 +58,7 @@ public class DelayCloseOrderConsumer implements RocketMQListener<MessageWrapper<
     @Value("${ticket.availability.cache-update.type:}")
     private String ticketAvailabilityCacheUpdateType;
 
+    // 延迟发送消息，若接收到消息，则说明订单过期
     @Idempotent(
             uniqueKeyPrefix = "index12306-ticket:delay_close_order:",
             key = "#delayCloseOrderEventMessageWrapper.getKeys()+'_'+#delayCloseOrderEventMessageWrapper.hashCode()",
@@ -72,12 +73,15 @@ public class DelayCloseOrderConsumer implements RocketMQListener<MessageWrapper<
         String orderSn = delayCloseOrderEvent.getOrderSn();
         Result<Boolean> closedTickOrder;
         try {
+            // 执行关闭订单 主要逻辑判断订单状态是否为“待支付”，是“待支付”，获取对应分布式锁，获取锁成功后，将订单状态改为“关闭”，返回true
             closedTickOrder = ticketOrderRemoteService.closeTickOrder(new CancelTicketOrderReqDTO(orderSn));
         } catch (Throwable ex) {
             log.error("[延迟关闭订单] 订单号：{} 远程调用订单服务失败", orderSn, ex);
             throw ex;
         }
+        // 若取消单成功 且 cacheUpdateType != "binlog"（不是使用canal更新的缓存）
         if (closedTickOrder.isSuccess() && !StrUtil.equals(ticketAvailabilityCacheUpdateType, "binlog")) {
+            // 关单失败，则直接返回
             if (!closedTickOrder.getData()) {
                 log.info("[延迟关闭订单] 订单号：{} 用户已支付订单", orderSn);
                 return;
@@ -87,6 +91,7 @@ public class DelayCloseOrderConsumer implements RocketMQListener<MessageWrapper<
             String arrival = delayCloseOrderEvent.getArrival();
             List<TrainPurchaseTicketRespDTO> trainPurchaseTicketResults = delayCloseOrderEvent.getTrainPurchaseTicketResults();
             try {
+                // 解锁选中以及沿途车牌座位状态，将座位的状态改为 UNLOCK
                 seatService.unlock(trainId, departure, arrival, trainPurchaseTicketResults);
             } catch (Throwable ex) {
                 log.error("[延迟关闭订单] 订单号：{} 回滚列车DB座位状态失败", orderSn, ex);

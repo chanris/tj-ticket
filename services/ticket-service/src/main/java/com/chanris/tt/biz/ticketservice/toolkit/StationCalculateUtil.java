@@ -55,8 +55,10 @@ public final class StationCalculateUtil {
         if (startIndex == -1 || endIndex == -1 || startIndex >= endIndex) {
             return takeoutStationList;
         }
-        // todo 24/9/13
+        // example: stations={北京, 杭州, 上海, 深圳, 广东} startStation=杭州，endStation=深圳
+        // startIdx: 1  endIdx: 3
         if (startIndex != 0) {
+            // [北京, 杭州] [北京，上海] [北京，深圳] [北京，广东]
             for (int i = 0; i < startIndex; i++) {
                 for (int j = 1; j < stations.size() - startIndex; j++) {
                     takeoutStationList.add(new RouteDTO(stations.get(i), stations.get(startIndex + j)));
@@ -64,6 +66,7 @@ public final class StationCalculateUtil {
             }
         }
         for (int i = startIndex; i <= endIndex; i++) {
+            // [杭州, 广东] [上海，广东] [深圳，广东]
             for (int j = i + 1; j < stations.size() && i < endIndex; j++) {
                 takeoutStationList.add(new RouteDTO(stations.get(i), stations.get(j)));
             }

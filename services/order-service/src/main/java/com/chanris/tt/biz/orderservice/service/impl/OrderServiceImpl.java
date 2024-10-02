@@ -190,9 +190,16 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, OrderDO> implemen
         return orderSn;
     }
 
+    /**
+     * 关闭订单
+     *
+     * @param requestParam 关闭火车票订单入参
+     * @return
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean closeTickOrder(CancelTicketOrderReqDTO requestParam) {
+        // 获取订单状态，若为null 或者 不为“待支付” 则返回false，表示关闭失败
         String orderSn = requestParam.getOrderSn();
         LambdaQueryWrapper<OrderDO> queryWrapper = Wrappers.lambdaQuery(OrderDO.class)
                 .eq(OrderDO::getOrderSn, orderSn)
@@ -227,7 +234,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, OrderDO> implemen
             throw new ClientException(OrderCanalErrorCodeEnum.ORDER_CANAL_REPETITION_ERROR);
         }
         try {
-            // 更新订单的状态为关闭
+            // 更新订单的状态为“关闭”
             OrderDO updateOrderDO = new OrderDO();
             updateOrderDO.setStatus(OrderStatusEnum.CLOSED.getStatus());
             LambdaQueryWrapper<OrderDO> updateWrapper = Wrappers.lambdaQuery(OrderDO.class)

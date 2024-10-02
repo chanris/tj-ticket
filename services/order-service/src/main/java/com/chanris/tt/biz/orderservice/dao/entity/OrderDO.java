@@ -100,6 +100,5 @@ public class OrderDO extends BaseDO {
      * 出发时间
      */
     private Date arrivalTime;
-
 }
 

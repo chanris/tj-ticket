@@ -22,11 +22,11 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author chenyue7@foxmail.com
  * @date 2024/9/2
- * @description
+ * @description MQ场景下的SPEL类型的幂等处理器
  */
 @RequiredArgsConstructor
 public final class IdempotentSpELByMQExecuteHandler extends AbstractIdempotentExecuteHandler implements IdempotentSpELService {
-    private final static int TIMEOUT = 600;
+    private final static int TIMEOUT = 600; // ms
 
     private final static String WRAPPER = "wrapper:spEL:MQ";
 
@@ -42,19 +42,22 @@ public final class IdempotentSpELByMQExecuteHandler extends AbstractIdempotentEx
         return IdempotentParamWrapper.builder().lockKey(key).joinPoint(joinPoint).build();
     }
 
+    // 执行幂等逻辑
     @Override
     public void handler(IdempotentParamWrapper wrapper) {
         String uniqueKey = wrapper.getIdempotent().uniqueKeyPrefix() + wrapper.getLockKey();
         String absentAndGet = this.setIfAbsentAndGet(uniqueKey, IdempotentMQConsumeStatusEnum.CONSUMING.getCode(), TIMEOUT, TimeUnit.SECONDS);
-
         if (Objects.nonNull(absentAndGet)) {
+            //如果 锁的value为‘0’，表示正在消费中，则error为true，抛出重复消费异常；
             boolean error = IdempotentMQConsumeStatusEnum.isError(absentAndGet);
             LogUtil.getLog(wrapper.getJoinPoint()).warn("[{}] MQ repeated consumption, {}.", uniqueKey, error ? "Wait for the client to delay consumption" : "Status is completed");
             throw new RepeatConsumptionException(error);
         }
+        //将wrapper 放入上下文
         IdempotentContext.put(WRAPPER, wrapper);
     }
 
+    //获取lua脚本并执行
     public String setIfAbsentAndGet(String key, String value, long timeout, TimeUnit timeUnit) {
         DefaultRedisScript<String> redisScript = new DefaultRedisScript<>();
         ClassPathResource resource = new ClassPathResource(LUA_SCRIPT_SET_IF_ABSENT_AND_GET_PATH);
@@ -65,31 +68,32 @@ public final class IdempotentSpELByMQExecuteHandler extends AbstractIdempotentEx
         return ((StringRedisTemplate) distributedCache.getInstance()).execute(redisScript, List.of(key), value, millis);
     }
 
+    // 业务执行抛异常时的逻辑
+    // 具体就是删除幂等锁
     @Override
     public void exceptionProcessing() {
         IdempotentParamWrapper wrapper = (IdempotentParamWrapper) IdempotentContext.getKey(WRAPPER);
-        if (wrapper != null) {
-            Idempotent idempotent = wrapper.getIdempotent();
-            String uniqueKey = idempotent.uniqueKeyPrefix() + wrapper.getLockKey();
-            try {
-                distributedCache.delete(uniqueKey);
-            } catch (Throwable ex) {
-                LogUtil.getLog(wrapper.getJoinPoint()).error("[{}] Failed to del MQ anti-heavy token.", uniqueKey);
-            }
+        if (wrapper == null) return;
+        Idempotent idempotent = wrapper.getIdempotent();
+        String uniqueKey = idempotent.uniqueKeyPrefix() + wrapper.getLockKey();
+        try {
+            distributedCache.delete(uniqueKey);
+        } catch (Throwable ex) {
+            LogUtil.getLog(wrapper.getJoinPoint()).error("[{}] Failed to del MQ anti-heavy token.", uniqueKey);
         }
     }
 
+    // 业务代码执行完毕后，执行后置逻辑
     @Override
     public void postProcessing() {
         IdempotentParamWrapper wrapper = (IdempotentParamWrapper) IdempotentContext.getKey(WRAPPER);
-        if (wrapper != null) {
-            Idempotent idempotent = wrapper.getIdempotent();
-            String uniqueKey = idempotent.uniqueKeyPrefix() + wrapper.getLockKey();
-            try {
-                distributedCache.put(uniqueKey, IdempotentMQConsumeStatusEnum.CONSUMED.getCode(), idempotent.keyTimeout(), TimeUnit.SECONDS);
-            } catch (Throwable ex) {
-                LogUtil.getLog(wrapper.getJoinPoint()).error("[{}] Failed to set MQ anti-heavy token.", uniqueKey);
-            }
+        if (wrapper == null) return;
+        Idempotent idempotent = wrapper.getIdempotent();
+        String uniqueKey = idempotent.uniqueKeyPrefix() + wrapper.getLockKey();
+        try {
+            distributedCache.put(uniqueKey, IdempotentMQConsumeStatusEnum.CONSUMED.getCode(), idempotent.keyTimeout(), TimeUnit.SECONDS);
+        } catch (Throwable ex) {
+            LogUtil.getLog(wrapper.getJoinPoint()).error("[{}] Failed to set MQ anti-heavy token.", uniqueKey);
         }
     }
 }

@@ -18,10 +18,15 @@ public class IdempotentAspect {
 
     @Around("@annotation(com.chanris.tt.framework.starter.idempotent.annotation.Idempotent)")
     public Object idempotentHandler(ProceedingJoinPoint joinPoint) throws Throwable {
+        // 获取幂等注解
         Idempotent idempotent = getIdempotent(joinPoint);
+        // 根据幂等场景字段和类型字段获取对应的处理器
+        // 场景分为：RESTAPI, MQ
+        // 类型分为：TOKEN, PARAM, SPEL
         IdempotentExecuteHandler instance = IdempotentExecuteHandlerFactory.getInstance(idempotent.scene(), idempotent.type());
         Object resultObj;
         try {
+            // 把当前的jointPoint和注解传入execute方法 进行幂等逻辑执行
             instance.execute(joinPoint, idempotent);
             resultObj = joinPoint.proceed();
             instance.postProcessing();
@@ -45,6 +50,7 @@ public class IdempotentAspect {
         return resultObj;
     }
 
+    // 获得jointPoint的幂等注解
     public static Idempotent getIdempotent(ProceedingJoinPoint joinPoint) throws NoSuchMethodException {
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         Method targetMethod = joinPoint.getTarget().getClass().getDeclaredMethod(methodSignature.getName(), methodSignature.getMethod().getParameterTypes());

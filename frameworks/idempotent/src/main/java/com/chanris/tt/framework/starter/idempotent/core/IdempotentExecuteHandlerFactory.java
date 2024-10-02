@@ -16,6 +16,9 @@ import com.chanris.tt.framework.starter.idempotent.enums.IdempotentTypeEnum;
  */
 public class IdempotentExecuteHandlerFactory {
 
+    // 根据scene和type通过switch-case语句，再通过SpringContext.getBean从IOC容器取到对应的Handler
+    // 具体来说场景为RESTAPI，根据类型有三种处理器
+    // 场景为MQ，只有一种处理器，也就是SPEL
     public static IdempotentExecuteHandler getInstance(IdempotentSceneEnum scene, IdempotentTypeEnum type) {
         IdempotentExecuteHandler result = null;
         switch (scene) {

@@ -35,6 +35,7 @@
         group by carriage_number
     </select>
 
+
     <select id="listSeatTypeCount" resultType="com.chanris.tt.biz.ticketservice.dto.domain.SeatTypeCountDTO">
         select seat_type as seatType, count(*) as seatCount
         from t_seat

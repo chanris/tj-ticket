@@ -48,6 +48,7 @@ public abstract class AbstractCommonSendProduceTemplate<T> {
         BaseSendExtendDTO baseSendExtendDTO = buildBaseSendExtendParam(messageSendEvent);
         SendResult sendResult;
         try {
+            // 从BaseSendExtendDTO中拿到 topic 和 tag
             StringBuilder destinationBuilder = StrUtil.builder().append(baseSendExtendDTO.getTopic());
             if (StrUtil.isNotBlank(baseSendExtendDTO.getTag())) {
                 destinationBuilder

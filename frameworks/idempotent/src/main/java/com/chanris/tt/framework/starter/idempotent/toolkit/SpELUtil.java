@@ -30,6 +30,7 @@ public class SpELUtil {
         ArrayList<String> spELFlag = Lists.newArrayList("#", "T(");
         Optional<String> optional = spELFlag.stream().filter(spEl::contains).findFirst();
         if (optional.isPresent()) {
+            // 如果spEl中存在#或者 T( 则进行解析
             return parse(spEl, method, contextObj);
         }
         return spEl;
@@ -39,20 +40,24 @@ public class SpELUtil {
      * 转换参数为字符串
      *
      * @param spEl       spEl 表达式
-     * @param contextObj 上下文对象
+     * @param contextObj 上下文对象（方法的实参列表）
      * @return 解析的字符串值
      */
     public static Object parse(String spEl, Method method, Object[] contextObj) {
+        // 此时确定spEl包含# 或者 T() 格式，需要参数填充
         DefaultParameterNameDiscoverer discoverer = new DefaultParameterNameDiscoverer();
         ExpressionParser parser = new SpelExpressionParser();
         Expression exp = parser.parseExpression(spEl);
+        // 获取方法的参数名称列表
         String[] params = discoverer.getParameterNames(method);
+        // 获取方法的参数列表上下文
         StandardEvaluationContext context = new StandardEvaluationContext();
         if (ArrayUtil.isNotEmpty(params)) {
             for (int len = 0; len < params.length; len++) {
                 context.setVariable(params[len], contextObj[len]);
             }
         }
+        // spEl设置参数列表上下文，并获得返回值
         return exp.getValue(context);
     }
 }
