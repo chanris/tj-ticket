@@ -38,14 +38,12 @@ public class CanalCommonSyncBinlogConsumer implements RocketMQListener<CanalBinl
     @Value("${ticket.availability.cache-update.type:}")
     private String ticketAvailabilityCacheUpdateType;
 
-
-
     @Idempotent(
             uniqueKeyPrefix = "tt-ticket:binlog_sync:",
             key = "#message.getId()+'_'+#message.hashCode()",
             type = IdempotentTypeEnum.SPEL,
             scene = IdempotentSceneEnum.MQ,
-            keyTimeout = 7200L
+            keyTimeout = 7200L // second
     )
     @Override
     public void onMessage(CanalBinlogEvent message) {

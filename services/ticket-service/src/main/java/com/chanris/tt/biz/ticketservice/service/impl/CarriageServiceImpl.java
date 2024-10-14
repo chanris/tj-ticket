@@ -48,7 +48,7 @@ public class CarriageServiceImpl implements CarriageService {
     public List<String> listCarriageNumber(String trainId, Integer carriageType) {
         // 获得车厢号集合
         final String key = TRAIN_CARRIAGE + trainId;
-        return sageGetCarriageNumber(
+        return safeGetCarriageNumber(
                 // 列车 ID
                 trainId,
                 // key
@@ -88,7 +88,7 @@ public class CarriageServiceImpl implements CarriageService {
         return Optional.ofNullable(hashOperations.get(key, String.valueOf(carriageType))).map(Object::toString).orElse("");
     }
 
-    private List<String> sageGetCarriageNumber(String trainId, final String key, Integer carriageType, CacheLoader<String> loader) {
+    private List<String> safeGetCarriageNumber(String trainId, final String key, Integer carriageType, CacheLoader<String> loader) {
         // 尝试从分布式缓存中获取车厢号
         String result = getCarriageNumber(key, carriageType);
         // 获取成功，转换为集合返回结果

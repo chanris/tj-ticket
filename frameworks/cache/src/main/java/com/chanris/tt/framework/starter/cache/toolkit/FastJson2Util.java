@@ -8,7 +8,7 @@ import java.lang.reflect.Type;
  * @author chenyue7@foxmail.com
  * @date 2024/9/1
  * @description Fastjson2 工具类
- * //todo 24/9/1 看不懂
+ *
  */
 public class FastJson2Util {
 
